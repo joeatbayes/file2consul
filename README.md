@@ -13,7 +13,7 @@ configurtion parameters
 
 ## Basic Operation
 
-file2consul -E ENV=UAT01  -S=../prodConfig,..UAT/config,..TSTConfig,..JOESpecialConfig -sv127.0.0.0.1:8500 -cache=./cache/cache.dta
+    file2consul -E ENV=UAT01  -S=../prodConfig,..UAT/config,..TSTConfig,..JOESpecialConfig -sv127.0.0.0.1:8500 -cache=./cache/cache.dta
   -e Sets a local enviornment variable.  
     The system also reads enviornment variables currently defined for the current session.
     
