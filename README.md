@@ -3,7 +3,7 @@
 Consul provides a fairly simple KV configuration management system.  This works but the flat model can make supporting multiple environments that may contain hundreds of discrete configuration values onerous.  
 #### Environments are actually quite similar
 In many cases a new environment is actually identical to an existing environment except for a small number of changed parameters. In other instances a configuration value may only changed based on a predictable value such as a environment name such. For example in a TST environment the DB server may be at test-orcle-main.abc.com while in the PROD environment it may be at prod-orcle-main.abc.com. 
-#### Minimize Cost & Oportunity for errors 
+#### Minimize Cost & Opportunity for errors 
 file2consul seeks to minimize the total opportunity for manually introduced errors and the amount of work in managing configuration parameters by optimizing for use of these two patterns.  
 
 file2Consul uses interpolation and inheritance to allow a smaller set of configuration parameters to be used whenever values or keys change in predictable ways between environments. 
@@ -54,6 +54,6 @@ string to be used across multiple environments without requiring separate files.
 
 ## Reference
 
-* [git2consul](https://github.com/breser/git2consul) a similar utility but it does not support interpolation slot based inheritance.
+* [git2consul](https://github.com/breser/git2consul) a similar utility but it does not support interpolation or slot based inheritance.
 * [Consul http API guide](https://www.consul.io/api/index.html) 
 * [Consul ACL security guide](https://www.consul.io/docs/guides/acl.html) 
