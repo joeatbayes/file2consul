@@ -1,6 +1,6 @@
 # file2consul - Loads config file contents into consul. 
 
-Mirror key, values from property files into consul.       Reduces cost of maintaining larger configuration sets between environments by reducing re-statement and manual editing.  It provides  variable expansion, interpolation, inheritance style overrides and ability to update multiple consul servers.
+Mirror key, values from property files into consul.       Reduces cost of maintaining larger configuration sets between environments by reducing re-statement and manual editing.  It provides  variable expansion, interpolation, inheritance style overrides and the ability to update multiple consul servers.
 
 #### Environments are actually quite similar
 When building complex software that run on more than one computer we call an environment the set of computers required to run 1 full copy. 
@@ -21,7 +21,7 @@ environments.
 
 ## Basic Operation
 
-   Simple example showing building of the Prod settings using a template with mostly variable interpolation.   It uses inheritance override for a few values such as changing the number of network listeners.
+  Simple example showing building of the Prod settings using a template with mostly variable interpolation.   It uses inheritance override for a few values such as changing the number of network listeners.
 
 > Look at the sample configuration files in [data/config/simple](data/config/simple) they are the best way to learn about how to use file2consule to reduce manual work. 
 
