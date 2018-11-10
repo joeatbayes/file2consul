@@ -23,7 +23,7 @@ environments.
 
    Simple example showing building of the Prod settings using a template with mostly variable interpolation.   It uses inheritance override for a few values such as changing the number of network listeners.
 
-Look at the sample configuration files in [data/config/simple](data/config/simple) they are really the best way to learn about how to use file2consule to reduce manual work. 
+> Look at the sample configuration files in [data/config/simple](data/config/simple) they are the best way to learn about how to use file2consule to reduce manual work. 
 
 ```sh
 file2consul -ENV=PROD -COMPANY=ABC -APPNAME=peopleSearch -IN=data/config/simple/template;data/config/simple/prod; -uri=http://127.0.0.1:8500 -CACHE=data/{env}.{appname}.CACHE.b64.txt
@@ -139,6 +139,8 @@ TODO:  Add more detail here
 
 ## Build & Setup
 
+This software has been tested to build on Windows10,  Ubuntu,  MacOS. It should run fine on any computer where GO is available.  GO is only needed at build time, You can distribute the executable file without GO present.   
+
 Install GO compiler which can be downloaded from https://golang.org/dl/ 
 
 * Download the repository  using GIT  from command line
@@ -147,7 +149,7 @@ Install GO compiler which can be downloaded from https://golang.org/dl/
 git clone https://github.com/joeatbayes/file2consul.git
 ```
 
-* Or Download using HTTP   Open the following URI in your browser https://github.com/joeatbayes/file2consul/archive/master.zip   Once downloaded save in your desired directory and unzip.    You will need to be able to open a shell at that directory
+* To Download using your browser, open the following URI  https://github.com/joeatbayes/file2consul/archive/master.zip   Once downloaded save in your desired directory and unzip.    You will need to be able to open a shell at that directory
 
 * Add the directory where you copied the source to your [search PATH](http://www.linfo.org/path_env_var.html)  This can be done temporarily by running the [setGOEnv.bat](setGOEnv.bat) on windows or [setGOEnv.sh](setGOEnv.sh) on Linux or mac.  These are included in the downloaded repository.
 * Build the software by running  [makeGO.sh][makeGO.sh] on Linux or running [makeGO.bat](makeGO.bat) on windows.   It should produce several executable files including file2Consul.exe on windows or a executable file2Consul on Linux.

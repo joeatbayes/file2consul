@@ -6,13 +6,13 @@ Requirements for file to consul under consideration for future work
 
 # Agreed for Implementation
 
-* 
-* Allow a variable starting with value starting with @ to name a file.  If the file exists it's contents will be read and substituted for the value. The file name will be subjected to interpolation before attempting to open and the contents will also be subjected to interpolation
+* Update data/config/simple samples for a larger example set of properties.
 * Update documentation to better explain inheritance override versus interpolation.
 * Document what happens when a value that should not be interpolated such as {radomstring} occurs in file and does not have a overlapping variable defined.
 
 # Under Consideration 
 
+* Allow a variable starting with value starting with @ to name a file.  If the file exists it's contents will be read and substituted for the value. The file name will be subjected to interpolation before attempting to open and the contents will also be subjected to interpolation
 * Add Leading + semantic to allow longer strings to be defined inline
 * Allow a processing Directive @INCLUDE= to cause a file to be read at this time and processed as if it were include in the source file.  NOTE: Need to think about this use case we already have the ability to process files in order so should be able to do the same thing by breaking the files up.
 * Ability to suppress processing of files in directory that do not end with specific extensions such as .txt or .ini
