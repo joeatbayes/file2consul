@@ -242,7 +242,7 @@ func (parg *ParsedCommandArgs) SListDict(aname string) map[string]int {
 var str = "Old Value!"
 var ParmMatch, ParmErr = regexp.Compile("\\{.*?\\}")
 
-func Interpolate(str string, parg *ParsedCommandArgs) string {
+func (parg *ParsedCommandArgs) Interpolate(str string) string {
 	ms := ParmMatch.FindAllIndex([]byte(str), -1)
 	if len(ms) < 1 {
 		return str // no match found

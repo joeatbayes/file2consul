@@ -1,2 +1,0 @@
-number-of-search-VIP-listeners=1
-{ENV}.main-log-target=./logs/{APPNAME}

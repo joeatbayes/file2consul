@@ -1,0 +1,8 @@
+#basic.prop.txt
+# Basic System properties used by all downstream environments
+
+{ENV}.main-db-server=server1-oracle.{ENV}.{COMPANY}.com
+
+{ENV}.main-log-target=/logs/{ENV}/{APPNAME}
+
+number-of-search-VIP-listeners=3

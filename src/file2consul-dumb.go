@@ -7,6 +7,7 @@ package main
 import (
 	"bufio"
 	"fmt"
+
 	//"io/ioutil"
 	"jutil"
 	//"net/http"
@@ -21,17 +22,23 @@ func main() {
 	pargs := jutil.ParseCommandLine(args)
 
 	if len(args) < 2 { // || (pargs.Exists("h")) || (pargs.Exists("help")) {
-		fmt.Println("file2consul-dumb\n")
-		fmt.Println("\texample:  executableName -uri=http://127.0.0.1:8500  -inFile=data/simple-config/basic.prxxxop.txt -ENV=LOCAL")
-		fmt.Println("\t  -uri= uri of the consul server to save the values in.")
-		fmt.Println("\t     If seprated by , can save to more than one server")
-		fmt.Println("\t     defaults to http://127.0.0.1:8500 if not specified")
-		fmt.Println("\t   -inFile= Name of input file to process if not specified")
-		fmt.Println("\t      then defaults to data/simple-config/basic.prop.txt")
-		fmt.Println("\t   -ENV=LOCAL enviornment variable that can be interpolated into output")
-		fmt.Println("\t      defaults to LOCAL if not set.")
-		fmt.Println("\t  other named parameters are treated in interpolated values")
-		fmt.Println("\t  Most common error is forgetting - as prefix for named parms")
+
+		msg := `
+
+  file2consul-dumb -ENV=DEMO -COMPANY=ABC -APPNAME=file2consul-dumb -FILE=data/config/simple/template/basic.prop.txt -uri=http://127.0.0.1:8500
+ 
+  
+   -file=name of input paramter file
+   -uri=uri to reach console server
+   -appname = variable used for interpolation
+   -env =  variable used for interpolation
+   -company = variable used for interpolation
+   -appname = varabile used for interpolation
+ 
+   other variables can be defined as needed
+   variables are not case sensitive.
+		-`
+		fmt.Println(msg)
 		fmt.Println("\t   Number of Args: %v  args: %s\n", len(args), args)
 	}
 
@@ -62,8 +69,8 @@ func main() {
 			fmt.Println("line#", lineCnt, "fails split on = test", " line=", aline)
 			continue
 		}
-		aKey := jutil.Interpolate(arr[0], pargs)
-		aVal := jutil.Interpolate(arr[1], pargs)
+		aKey := pargs.Interpolate(arr[0])
+		aVal := pargs.Interpolate(arr[1])
 		fmt.Println("after interpolate aKey=", aKey, " aVal=", aVal)
 		jutil.SetConsulKey(serverURI, aKey, aVal)
 		fmt.Println("\n")

@@ -1,0 +1,5 @@
+# For joes special development enviornment we are 
+# running tests against the PROD server so we will
+# change the default override the default target DB.
+
+{ENV}.main-db-server=server1-oracle.PROD.ABCX1.com

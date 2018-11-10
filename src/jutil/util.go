@@ -2,7 +2,7 @@ package jutil
 
 import (
 	"fmt"
-	"net/http"
+	//"net/http"
 	"os"
 	"strings"
 	"time"
@@ -10,7 +10,7 @@ import (
 
 func TimeTrack(fi *os.File, start time.Time, name string) {
 	elapsed := time.Since(start).Seconds() * 1000.0
-	fmt.Fprintf(fi, "%s took %fms", name, elapsed)
+	fmt.Fprintf(fi, "%s took %fms\n", name, elapsed)
 	fi.Sync()
 }
 
@@ -21,37 +21,26 @@ func TimeTrackMin(fi *os.File, start time.Time, name string) {
 	fi.Sync()
 }
 
+func Nowms() float64 {
+	nn := time.Now()
+	return float64(nn.UnixNano()) / float64(time.Millisecond)
+}
+
+func Elap(msg string, beg_time float64, end_time float64) float64 {
+	elap := end_time - beg_time
+	fmt.Printf("ELAP %s = %12.3f ms\n", msg, elap)
+	return elap
+}
+
+func Check(msg string, e error) {
+	if e != nil {
+		fmt.Println("ERROR:")
+		fmt.Println(e)
+		panic(e)
+	}
+}
+
 func KeepLines(s string, n int) string {
 	result := strings.Join(strings.Split(s, "\n")[:n], "\n")
 	return strings.Replace(result, "\r", "", -1)
-}
-
-func SetConsulKey(serverURI string, key string, val string) {
-	fmt.Println("setConsulKey key=", key, " value=", val)
-	uri := serverURI + "/v1/kv/" + key
-	val = "sample data value"
-	//fmt.Println("uri=", uri)
-	start := time.Now().UTC()
-	hc := http.Client{}
-	req, err := http.NewRequest("PUT", uri, strings.NewReader(val))
-	if err != nil {
-		fmt.Println("Error: opening uri=", uri, " err=", err, " key=", key, "  val=", val)
-		return
-	}
-
-	resp, err := hc.Do(req)
-	if err != nil {
-		fmt.Println("Error: uri=", uri, " err=", err)
-		return
-	}
-
-	if resp.StatusCode != 200 {
-		fmt.Println("Error: Expected Status Code 200, Got ", resp.StatusCode)
-	} else {
-		//fmt.Println("Sucess:")
-	}
-	//body, _ := ioutil.ReadAll(resp.Body)
-	TimeTrack(os.Stdout, start, "finished single PUT uri="+uri+"\n")
-	//fmt.Println("statusCode=", resp.StatusCode)
-	//fmt.Println(" body=", string(body))
 }

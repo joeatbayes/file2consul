@@ -22,7 +22,35 @@ environments.
 ## Basic Operation
 
 ```sh
-file2consul -ENV=UAT01  -FILES=data/simple-config/basic.prop.txt, ../UAT/config, ../TST/Config, ../JOESpecialConfig -URI=http://127.0.0.0.1:8500 -cache=cache/cache.dta
+file2consul -ENV=DEMO -COMPANY=ABC -APPNAME=file2consul-dumb -IN=data/config/simple/template;data/config/simple/prod;data/config/simple/uat;data/config/simple/joes-dev.prop.txt -uri=http://127.0.0.1:8500
+
+Command may be shown as wrapped but it is really one longer command. 
+  
+   -IN=name of input paramter file or directory
+       If named resource is directory will process all 
+	   files in that directory.    Multiple inputs
+	   can be specified seprated by ;.  Each input set
+	   will be processed in order with any duplicate 
+	   keys in subsequent files overriding those 
+	   previously defined for the same key.   This 
+	   provides a simple form of inheritance where
+	   only the values that change between enviornment
+	   need to be listed while the rest can be inherited
+	   from a common parent.  If not specified defaults
+	   to data/config/simple/basic
+	  
+
+   -URI=uri to reach console server.   
+        If seprated by ; will save to each server listed
+		defaults to http://127.0.0.1:8500 if not specified
+		
+   -appname = variable used for interpolation
+   -env =  variable used for interpolation
+   -company = variable used for interpolation
+   -appname = varabile used for interpolation
+
+   other named parameters are treated in interpolated values
+   Most common error is forgetting - as prefix for named parms
 ```
   -used with any name sets a variable that can be used for interpolation.  The system also reads environment variables currently defined for the current session.
 ​    
@@ -43,7 +71,7 @@ Please note the dumb version does not attempt detect lines which have not change
 ```sh
 go build src/file2consul-dumb.go
 
-file2consul-dumb -ENV=DEMO -COMPANY=ABC -APPNAME=file2consul-dumb -FILE=data/simple-config/basic.prop.txt -uri=http://127.0.0.1:8500
+file2consul-dumb -ENV=DEMO -COMPANY=ABC -APPNAME=file2consul-dumb -FILE=data/config/simple/template/basic.prop.txt -uri=http://127.0.0.1:8500
  
   # the file2Consul-dump lines wrapped for display when entering it should be one long line. 
  
