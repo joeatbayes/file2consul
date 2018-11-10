@@ -1,8 +1,9 @@
 # file2consul - Loads config file contents into consul. 
 
-Consul provides a fairly simple KV configuration management system.  This works but the flat model can make supporting multiple environments that may contain hundreds of discrete configuration values onerous.   file2consul seeks to educes amount of work in managing configuration parameters.  It also minimizes  opportunities to manually introduce errors. 
+Mirror key, values from property files into consul.       Reduces cost of maintaining larger configuration sets between environments by reducing re-statement and manual editing.  It provides  variable expansion, interpolation, inheritance style overrides and ability to update multiple consul servers.
+
 #### Environments are actually quite similar
-In many companies when building complex software that runs on more than one computer we call an environment the set of computers required to run 1 copy. 
+When building complex software that run on more than one computer we call an environment the set of computers required to run 1 full copy. 
 
 In most companies there is a PROD environment where the production software runs.  A UAT environment where the complete set is tested prior to release into production and TEST where developers can test their modules to be sure they work with other components planned to be released.   In larger companies it is not uncommon to have over a dozen of these environments.
 
@@ -21,6 +22,8 @@ environments.
 ## Basic Operation
 
    Simple example showing building of the Prod settings using a template with mostly variable interpolation.   It uses inheritance override for a few values such as changing the number of network listeners.
+
+Look at the sample configuration files in [data/config/simple](data/config/simple) they are really the best way to learn about how to use file2consule to reduce manual work. 
 
 ```sh
 file2consul -ENV=PROD -COMPANY=ABC -APPNAME=peopleSearch -IN=data/config/simple/template;data/config/simple/prod; -uri=http://127.0.0.1:8500 -CACHE=data/{env}.{appname}.CACHE.b64.txt
@@ -131,7 +134,7 @@ Ancestor overrides allow for changes that are specific to an environment that ca
 
 Sample Usage
 
-
+TODO:  Add more detail here
 
 
 ## Build & Setup
@@ -149,13 +152,6 @@ git clone https://github.com/joeatbayes/file2consul.git
 * Add the directory where you copied the source to your [search PATH](http://www.linfo.org/path_env_var.html)  This can be done temporarily by running the [setGOEnv.bat](setGOEnv.bat) on windows or [setGOEnv.sh](setGOEnv.sh) on Linux or mac.  These are included in the downloaded repository.
 * Build the software by running  [makeGO.sh][makeGO.sh] on Linux or running [makeGO.bat](makeGO.bat) on windows.   It should produce several executable files including file2Consul.exe on windows or a executable file2Consul on Linux.
 * The file2Consule [executable](http://www.linfo.org/executable.html) can be copied to any location in the [search PATH](http://www.linfo.org/path_env_var.html).  It will always look for files relative to the [current working directory](http://www.informit.com/articles/article.aspx?p=2468330&seqNum=15) unless the paths specified on the command line are [absolute paths](https://www.linux.com/blog/absolute-path-vs-relative-path-linuxunix).   We generally leave our in the same directory where we downloaded the repository to make it easy access our sample input files.
-* 
-
-
-
-
-
-
 
 ## Main Files
 
@@ -163,6 +159,7 @@ git clone https://github.com/joeatbayes/file2consul.git
 
 * [makeGo.sh linux](makeGO.sh)  [makeGO.bat Windows](makeGO.bat)  Builds the main executables from the GO Lang source code
 * [License](LICENSE.md)
+* TODO: Fill This in
 
 ## Reference
 
