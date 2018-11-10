@@ -46,7 +46,9 @@ file2consul-dumb -ENV=DEMO -COMPANY=ABC -APPNAME=file2consul-dumb -FILE=data/sim
  -env =  variable used for interpolation
  -company = variable used for interpolation
  -appname = varabile used for interpolation
+ 
   other variables can be defined as needed
+  variables are not case sensitive.
 ```
 
 ## Basic Interpolation
@@ -58,7 +60,10 @@ string to be used across multiple environments without requiring separate files.
      Assuming the a variable ENV has been defined as UAT01
      the key becomes UAT01.DBServer while the value became 
      orcl.master.UAT01.  Interpolation can occur on either 
-     the key and or the data values.
+     the key and or the data values or both.
+     
+     Interpolation variables can be defined on the command line using the -varaible notation  There are a few predefined named parameters the program uses for it's own operation such as -uri which indicates the set of URI it should use to talk to consul.   Even these pre-defined variables are available for use
+     in interpolation. 
 
 ## Using Ancestor Overrides
 
