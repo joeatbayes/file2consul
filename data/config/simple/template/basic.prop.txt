@@ -1,5 +1,9 @@
 #basic.prop.txt
+#
 # Basic System properties used by all downstream environments
+# Normally the first set of properties loaded.
+
+{ENV}.purpose= {ENV} Override this value to describe your enviornment's purpose 
 
 {ENV}.main-db-server=server1-oracle.{ENV}.{COMPANY}.com
 

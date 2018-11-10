@@ -1,2 +1,10 @@
-prod.purpose=Prod enviornment is used to support live users and should not be used for testing.
+# Properies that need to be changed for Prod 
+# that can not be generated automatically
+# based on interpolation of variables.  Most other enviornments
+# are built from prod and changed to their special 
+# use cases as needed.  We do after all want all our 
+# environments to be as much like prod unless there is 
+# a reason they can not be.
+
+{ENV}.purpose={ENV} Prod enviornment is used to support live users and should not be used for testing.
 {ENV}.number-of-search-VIP-listeners=19

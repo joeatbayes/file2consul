@@ -1,2 +1,11 @@
-number-of-search-VIP-listeners=1
+# Properies that need to be changed dev test.
+# Dev Test normally inherits from UAT which 
+# normally inherits from prod. Place variables
+# here that can not be generated automatically
+# based on interpolation of variables.  For example
+# if you know that you must use a entirely different
+# authorization agent then could be overridden here.
+
+{ENV}.purpose= {ENV} The Dev Test Environment is shared by all developers who want to test their code against current builds from other developers. 
+{ENV}.number-of-search-VIP-listeners=1
 {ENV}.main-log-target=./logs/{APPNAME}

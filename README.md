@@ -18,11 +18,12 @@ environments.
 
 **Inheritance**  supports easier derived environments when the differences can not be easily handled by interpolation.     Values are processed from each parent sequentially building a new tree where subsequent derived environments may replace a subset of the configured environments.
 
-
 ## Basic Operation
 
+   Simple example showing building of the Prod settings using a template with mostly variable interpolation.   It uses inheritance override for a few values such as changing the number of network listeners.
+
 ```sh
-file2consul -ENV=DEMO -COMPANY=ABC -APPNAME=file2consul-dumb -IN=data/config/simple/template;data/config/simple/prod;data/config/simple/uat;data/config/simple/joes-dev.prop.txt -uri=http://127.0.0.1:8500
+file2consul -ENV=PROD -COMPANY=ABC -APPNAME=peopleSearch -IN=data/config/simple/template;data/config/simple/prod; -uri=http://127.0.0.1:8500 -CACHE=data/{env}.{appname}.CACHE.b64.txt
 
 Command may be shown as wrapped but it is really one longer command. 
   
@@ -43,7 +44,16 @@ Command may be shown as wrapped but it is really one longer command.
    -URI=uri to reach console server.   
         If seprated by ; will save to each server listed
 		defaults to http://127.0.0.1:8500 if not specified
-		
+	
+   -CACHE = name of files to use as cache file.  This
+      file is read and compared to the post processing 
+      key / value set to determine what values need to
+      be saved to consul.  It is also re-written
+	  and end of run when defined.  To clear cache
+	  delete the file before running the utility.
+      This value is interpolated so you can use variables 
+      things like enviornment as part of file name.
+      
    -appname = variable used for interpolation
    -env =  variable used for interpolation
    -company = variable used for interpolation
@@ -53,6 +63,19 @@ Command may be shown as wrapped but it is really one longer command.
    Most common error is forgetting - as prefix for named parms
 ```
 * TODO: -runPull optional if present and set to "true" and when the source path is a directory the the system will run a git pull in that directory to fetch most recent copy of the config settings.
+* NOTE: Values returned from consul are base64 decoded.  You have to use a Base64 decoder to see what is actually saved in consul.  I was initially confused by this when consul looked like it was returning jiberish.
+
+### A More complex inheritance example
+
+ showing inheritance overrides with values derived from the higher order environments.   This example is one of the more complex where we are actually building an environment configuration for a individual developer but rather than specify everything we specify an order where we process first the base Template then Prod, Then UAT, then DEV and finally joes special properties.  This allows to ensure that we have all the basic settings identical to PROD and then change those as we work down through the other environments.   This helps prevent lower order environments from accidentally being different than prod.   While this does help with consistency we used the {env} in all the key names so even though some of the basic configuration came from prod we can be sure we do not accidentally change prod config values.    We also use {env} and other variables in several of the  data bodies to give vips that have similar but predictably different names differentiation so they do not conflict with prod assets.
+
+```sh
+file2consul -ENV=JTEST -COMPANY=ACME -APPNAME=peopleSearch -IN=data/config/simple/template;data/config/simple/prod;data/config/simple/uat;data/config/simple/dev;data/config/simple/joes-dev.prop.txt -uri=http://127.0.0.1:8500
+
+#Command may be shown as wrapped but it is really one longer command.   
+
+#NOTE: Absence of cache command will cause all of consul values to be udpated every time. 
+```
 
 ### Simple Operation of Dumb version without Inheritance
 

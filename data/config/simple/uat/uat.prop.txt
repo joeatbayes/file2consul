@@ -1,1 +1,9 @@
+# Properies that need to be changed for Prod 
+# that can not be generated automatically
+# based on interpolation of variables.
+# UAT is normally inherited from prod and should
+# require very little override that can not be done
+# automatically from variable expansion.  
+
+{ENV}.purpose=The UAT enviornment is used to support UAT users doing testing and must be kept stable
 {ENV}.number-of-search-VIP-listeners=2
