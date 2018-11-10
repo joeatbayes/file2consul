@@ -63,7 +63,7 @@ Command may be shown as wrapped but it is really one longer command.
    Most common error is forgetting - as prefix for named parms
 ```
 * TODO: -runPull optional if present and set to "true" and when the source path is a directory the the system will run a git pull in that directory to fetch most recent copy of the config settings.
-* NOTE: Values returned from consul are base64 decoded.  You have to use a Base64 decoder to see what is actually saved in consul.  I was initially confused by this when consul looked like it was returning jiberish.
+* NOTE: Values returned from consul are base64 decoded.  You have to use a Base64 decoder to see what is actually saved in consul.  I was initially confused by this when consul looked like it was returning gibberish.
 
 ### A More complex inheritance example
 
@@ -167,8 +167,6 @@ git clone https://github.com/joeatbayes/file2consul.git
 ## Reference
 
 * [git2consul](https://github.com/breser/git2consul) a similar utility but it does not support interpolation or slot based inheritance.
-
-* [Consul Emulator in ESP32 Hardware](....) Runs the HTTP listener portion of a Consul network listener on $10 worth of hardware.    Why run Consul on VM's that will cost thousands of dollars per year simply run 3 or 4 on these 10 dollar modules put them behind a vip and you have the cheapest high availability configuration store available.
 
 * ##### Consul
 
