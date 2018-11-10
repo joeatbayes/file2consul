@@ -21,25 +21,32 @@ environments.
 
 ## Basic Operation
 
-    file2consul -E ENV=UAT01  -S=../prodConfig,..UAT/config,..TSTConfig,..JOESpecialConfig -sv127.0.0.0.1:8500 -cache=./cache/cache.dta
-  -e Sets a local environment variable.    The system also reads environment variables currently defined for the current session.
+```sh
+file2consul -ENV=UAT01  -FILES=data/simple-config/basic.prop.txt, ../UAT/config, ../TST/Config, ../JOESpecialConfig -URI=http://127.0.0.0.1:8500 -cache=cache/cache.dta
+```
+  -used with any name sets a variable that can be used for interpolation.  The system also reads environment variables currently defined for the current session.
 ​    
-  -p A list of paths that resolve to either a directory or a file.     The system will read and process the contents of each in the order  specified.  If a value for a given key is defined multiple times  the one encountered on the last file will win.
+  -FILES -  A list of paths that resolve to either a directory or a file.     The system will read and process the contents of each in the order  specified.  If a value for a given key is defined multiple times  the one encountered on the last file will win.
 ​     
-  -s Names the consul server to the values to.   If multiple servers are listed then the consul values will be copied to each of these servers.
+  -URI - Names the consul server to the values to.   If multiple servers are listed then the consul values will be copied to each of these servers.
 
   -cache=optional - Name of a file the system will save the full set of key, values after special processing  to.   This file is used to compare key/values from the last run so it can send only values  that have changed to consul. 
 
- -runPull optional if present and when the source path is a directory the the system will run a git pull in that directory to fetch most recent copy of the config settings.
+ -runPull optional if present and set to "true" and when the source path is a directory the the system will run a git pull in that directory to fetch most recent copy of the config settings.
 
 
 
 ### Simple Operation of Dumb version without Inheritance
 
+Please note the dumb version does not attempt detect lines which have not changed.  As a result it sends every config setting to consul every time it is ran.  The full version of file2consul keeps the last values saved and only updates consul when something actually changed. 
+
 ```sh
 go build src/file2consul-dumb.go
 
 file2consul-dumb -ENV=DEMO -COMPANY=ABC -APPNAME=file2consul-dumb -FILE=data/simple-config/basic.prop.txt -uri=http://127.0.0.1:8500
+ 
+  # the file2Consul-dump lines wrapped for display when entering it should be one long line. 
+ 
  -file=name of input paramter file
  -uri=uri to reach console server
  -appname = variable used for interpolation
