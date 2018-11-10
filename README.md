@@ -52,17 +52,9 @@ Command may be shown as wrapped but it is really one longer command.
    other named parameters are treated in interpolated values
    Most common error is forgetting - as prefix for named parms
 ```
-  -used with any name sets a variable that can be used for interpolation.  The system also reads environment variables currently defined for the current session.
-​    
-  -FILES -  A list of paths that resolve to either a directory or a file.     The system will read and process the contents of each in the order  specified.  If a value for a given key is defined multiple times  the one encountered on the last file will win.
-​     
-  -URI - Names the consul server to the values to.   If multiple servers are listed then the consul values will be copied to each of these servers.
-
   -cache=optional - Name of a file the system will save the full set of key, values after special processing  to.   This file is used to compare key/values from the last run so it can send only values  that have changed to consul. 
 
  -runPull optional if present and set to "true" and when the source path is a directory the the system will run a git pull in that directory to fetch most recent copy of the config settings.
-
-
 
 ### Simple Operation of Dumb version without Inheritance
 
