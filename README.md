@@ -52,9 +52,7 @@ Command may be shown as wrapped but it is really one longer command.
    other named parameters are treated in interpolated values
    Most common error is forgetting - as prefix for named parms
 ```
-  -cache=optional - Name of a file the system will save the full set of key, values after special processing  to.   This file is used to compare key/values from the last run so it can send only values  that have changed to consul. 
-
- -runPull optional if present and set to "true" and when the source path is a directory the the system will run a git pull in that directory to fetch most recent copy of the config settings.
+* TODO: -runPull optional if present and set to "true" and when the source path is a directory the the system will run a git pull in that directory to fetch most recent copy of the config settings.
 
 ### Simple Operation of Dumb version without Inheritance
 
@@ -63,12 +61,24 @@ Please note the dumb version does not attempt detect lines which have not change
 ```sh
 go build src/file2consul-dumb.go
 
-file2consul-dumb -ENV=DEMO -COMPANY=ABC -APPNAME=file2consul-dumb -FILE=data/config/simple/template/basic.prop.txt -uri=http://127.0.0.1:8500
+file2consul-dumb -ENV=DEMO -COMPANY=ABC -APPNAME=file2consul-dumb -FILE=data/config/simple/template/basic.prop.txt -uri=http://127.0.0.1:8500 -CACHE=data/{env}.CACHE.b64.txt
  
   # the file2Consul-dump lines wrapped for display when entering it should be one long line. 
  
  -file=name of input paramter file
+ 
  -uri=uri to reach console server
+ 
+ -CACHE = name of files to use as cache file.  This 
+    file is read and compared to the post processing
+    set to determine what new or changed values need
+    to be saved to consul.  It is also re-written
+	and end of run when defined.  To clear cache
+	delete the file before running the utility.
+    This value is subjected to interpolation so 
+    you can use variables like enviornment as part 
+    of file name.
+    
  -appname = variable used for interpolation
  -env =  variable used for interpolation
  -company = variable used for interpolation

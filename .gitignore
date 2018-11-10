@@ -1,0 +1,5 @@
+data/*CACHE.b64*
+*.bak
+*.tmp
+*.swp
+*.log

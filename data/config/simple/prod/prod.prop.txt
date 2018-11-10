@@ -1,1 +1,2 @@
-number-of-search-VIP-listeners=19
+prod.purpose=Prod enviornment is used to support live users and should not be used for testing.
+{ENV}.number-of-search-VIP-listeners=19

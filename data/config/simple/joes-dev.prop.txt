@@ -3,3 +3,4 @@
 # change the default override the default target DB.
 
 {ENV}.main-db-server=server1-oracle.PROD.ABCX1.com
+{ENV}.number-of-search-VIP-listeners=91

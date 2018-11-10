@@ -56,6 +56,8 @@ func loadFileAsDict(inFiName string, target map[string]string, pargs *jutil.Pars
 			aKey = arr[0]
 			aVal = arr[1]
 		}
+		aKey = strings.TrimSpace(aKey)
+		aVal = strings.TrimSpace(aVal)
 		// TODO:  Detect @ as first character of file to load file relative to current file
 		//   for value instead of using included string.
 		target[aKey] = aVal
@@ -64,6 +66,7 @@ func loadFileAsDict(inFiName string, target map[string]string, pargs *jutil.Pars
 }
 
 func loadInFiles(inPaths []string, pargs *jutil.ParsedCommandArgs, doInterpolate bool) map[string]string {
+	start := jutil.Nowms()
 	inDict := make(map[string]string) // Stores out built up set of config parameters
 	// Load all the specified paths into the dictionary
 	for i, apath := range inPaths {
@@ -90,13 +93,27 @@ func loadInFiles(inPaths []string, pargs *jutil.ParsedCommandArgs, doInterpolate
 			loadFileAsDict(apath, inDict, pargs, doInterpolate)
 		}
 	} // for paths
+	jutil.Elap("Load all files", start, jutil.Nowms())
 	return inDict
 }
 
+func obtainChangedItems(sdict map[string]string) map[string]string {
+
+	return nil
+}
+
+// Create log file entry for the current run showing variables saved to consul
+// along with details of the run.
+func logChangedItems(sdict map[string]string, fiName string, pargs *jutil.ParsedCommandArgs) {
+
+}
+
 func saveValuesToConsul(sdict map[string]string, serverURI string) {
+	start := jutil.Nowms()
 	for akey, aval := range sdict {
 		jutil.SetConsulKey(serverURI, akey, aval)
 	}
+	jutil.Elap("Save Values to Consul "+serverURI, start, jutil.Nowms())
 }
 
 func saveValuesToConsuls(sdict map[string]string, serverURIs []string) {
@@ -106,13 +123,13 @@ func saveValuesToConsuls(sdict map[string]string, serverURIs []string) {
 }
 
 func main() {
-
+	start := jutil.Nowms()
 	args := os.Args
 	pargs := jutil.ParseCommandLine(args)
 
 	if len(args) < 2 { // || (pargs.Exists("h")) || (pargs.Exists("help")) {
 		msg := `EXAMPLE
-  file2consul -ENV=DEMO -COMPANY=ABC -APPNAME=file2consul-dumb -IN=data/config/simple/template;data/config/simple/prod;data/config/simple/uat;data/config/simple/joes-dev.prop.txt -uri=http://127.0.0.1:8500
+  file2consul -ENV=DEMO -COMPANY=ABC -APPNAME=file2consul-dumb -IN=data/config/simple/template;data/config/simple/prod;data/config/simple/uat;data/config/simple/joes-dev.prop.txt -uri=http://127.0.0.1:8500 -CACHE=data/{env}.CACHE.b64.txt
  
   
    -IN=name of input paramter file or directory
@@ -129,9 +146,17 @@ func main() {
 	   to data/config/simple/basic
 	  
 
-   -URI=uri to reach console server.   
+   -URI=uri to reach consul server.   
         If seprated by ; will save to each server listed
 		defaults to http://127.0.0.1:8500 if not specified
+		
+   -CACHE = name of files to use as cache file.  This file is 
+     read and compared to the post processing set to determine
+	 what values need to be saved to consul.  It is also re-written
+	 and end of run when defined.  If you want to clear cache
+	 delete the file before running the utility.  This value
+	 is subjected to interpolation so you can use things like
+	 enviornment as part of file name.
 		
    -appname = variable used for interpolation
    -env =  variable used for interpolation
@@ -146,10 +171,37 @@ func main() {
 
 	inPaths := strings.Split(pargs.Sval("in", "data/config/simple/basic"), ";")
 	serverURIs := strings.Split(pargs.Sval("uri", "http://127.0.0.1:8500"), ";")
-	fmt.Println("inPaths=", inPaths, " consul server URI=", serverURIs)
-
+	cacheFiName := pargs.Interpolate(pargs.Sval("cache", ""))
+	fmt.Println("inPaths=", inPaths, " consul server URI=", serverURIs, "cacheFiName="+cacheFiName)
 	inDict := loadInFiles(inPaths, pargs, true)
-	fmt.Println("inDict=", inDict)
-	saveValuesToConsuls(inDict, serverURIs)
+	//fmt.Println("inDict=", inDict)
+
+	if cacheFiName > "" {
+		// If the cache file is specified then we only want
+		// to send Delta to consul.
+		if jutil.Exists(cacheFiName) {
+			cacheDict := jutil.LoadDictFile(cacheFiName, true)
+			deltaDict := jutil.CompareStrDict(cacheDict, inDict)
+			if len(deltaDict) < 1 {
+				fmt.Println("NOTE: No Values have changed, Not need to update consul")
+			} else {
+				saveValuesToConsuls(deltaDict, serverURIs)
+			}
+		} else {
+			// dictionary file did not exist yet so need to
+			// send entire set to consul.
+			saveValuesToConsuls(inDict, serverURIs)
+		}
+		jutil.SaveDictToFile(inDict, cacheFiName, true)
+	} else {
+		// save entire file set to Consul since
+		// we are not using the cache.
+		saveValuesToConsuls(inDict, serverURIs)
+	}
+
+	if cacheFiName > "" {
+
+	}
+	jutil.Elap("file2Consul complete run", start, jutil.Nowms())
 
 } //main

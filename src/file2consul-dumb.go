@@ -37,6 +37,9 @@ func main() {
  
    other variables can be defined as needed
    variables are not case sensitive.
+   
+   please consider using file2consul.  The dumb verison is only
+   intended to test early ideas and support experimentation
 		-`
 		fmt.Println(msg)
 		fmt.Println("\t   Number of Args: %v  args: %s\n", len(args), args)

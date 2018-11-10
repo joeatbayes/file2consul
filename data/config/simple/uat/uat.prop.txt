@@ -1,1 +1,1 @@
-number-of-search-VIP-listeners=2
+{ENV}.number-of-search-VIP-listeners=2

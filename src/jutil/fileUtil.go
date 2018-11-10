@@ -3,6 +3,7 @@ package jutil
 // tested with go 1.11.2 some functions not availble in older versions.
 
 import (
+	"bufio"
 	"bytes"
 	"fmt"
 
@@ -14,6 +15,7 @@ import (
 	//"net/url"
 	"os"
 	//"os/exec"
+	"encoding/base64"
 )
 
 func Exists(filePath string) bool {
@@ -62,4 +64,77 @@ func MapBadIDChar(strIn string) string {
 		}
 	}
 	return buff.String()
+}
+
+/* save dictionary to file.  Use base64 encoding for values
+because some values may contain vertical whitespace When b64Val
+is true then encode the values otherwise write them native.*/
+func SaveDictToFile(sdict map[string]string, fiName string, b64Val bool) {
+	// TODO: May be faster to endode this in a in memory
+	// butter and write as a block.
+	start := Nowms()
+	//fmt.Println("save dict to ", fiName)
+	f, err := os.Create(fiName)
+	if err != nil {
+		fmt.Println("ERROR: opening dict file for write fiName=", fiName, " err=", err)
+		return
+	}
+
+	for key, val := range sdict {
+		var saveStr string
+		if b64Val {
+			saveStr = key + "=" + base64.StdEncoding.EncodeToString([]byte(val)) + "\n"
+		} else {
+			saveStr = key + "=" + val + "\n"
+		}
+		//fmt.Println("saveStr=", saveStr)
+		_, err := f.WriteString(saveStr)
+		if err != nil {
+			fmt.Println("ERROR: writing to ", fiName, " err=", err)
+			defer f.Close()
+			return
+		}
+	}
+	f.Sync()
+	f.Close()
+	Elap("saveDictFile "+fiName, start, Nowms())
+}
+
+func LoadDictFile(inFiName string, b64Decode bool) map[string]string {
+	start := Nowms()
+	tout := make(map[string]string)
+	inFile, err := os.Open(inFiName)
+	if err != nil {
+		fmt.Println("ERROR: loadDictFile: error opening in file ", inFiName, " err=", err)
+	}
+	defer inFile.Close()
+	scanner := bufio.NewScanner(inFile)
+	lineCnt := 0
+	for scanner.Scan() {
+		aline := scanner.Text()
+		lineCnt++
+		if len(aline) <= 0 {
+			continue
+		}
+		aline = strings.TrimSpace(aline)
+		if strings.HasPrefix(aline, "#") {
+			continue
+		}
+
+		arr := strings.SplitN(aline, "=", 2)
+		if len(arr) != 2 {
+			fmt.Println("line#", lineCnt, "fails split on = test", " line=", aline)
+			continue
+		}
+		aKey := strings.TrimSpace(arr[0])
+		aVal := arr[1]
+		if b64Decode {
+			uDec, _ := base64.StdEncoding.DecodeString(aVal)
+			aVal = string(uDec)
+		}
+		tout[aKey] = aVal
+		//fmt.Println("LoadDictFile: key=", aKey, " val=", aVal)
+	}
+	Elap("loadDictFile "+inFiName, start, Nowms())
+	return tout
 }
