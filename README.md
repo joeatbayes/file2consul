@@ -1,6 +1,6 @@
 # file2consul - Loads config file contents into consul. 
 
-Mirror key, values from property files into consul.       Reduces cost of maintaining larger configuration sets between environments by reducing re-statement and manual editing.  It provides  variable expansion, interpolation, inheritance style overrides and the ability to update multiple consul servers.
+Mirror key, values from property files into consul.       Reduce cost of maintaining larger configuration sets for multiple environments by reducing re-statement and manual editing.  It provides  variable expansion, interpolation, inheritance style overrides and the ability to update multiple consul servers.
 
 #### Environments are actually quite similar
 When building complex software that run on more than one computer we call an environment the set of computers required to run 1 full copy. 
@@ -28,9 +28,11 @@ environments.
 ```sh
 file2consul -ENV=PROD -COMPANY=ABC -APPNAME=peopleSearch -IN=data/config/simple/template;data/config/simple/prod; -uri=http://127.0.0.1:8500 -CACHE=data/{env}.{appname}.CACHE.b64.txt
 
-Command may be shown as wrapped but it is really one longer command. 
-  
-   -IN=name of input paramter file or directory
+#Command may be shown as wrapped but it is really one longer command. 
+```
+
+```
+   -IN=name of input parameter file or directory
        If named resource is directory will process all 
 	   files in that directory.    Multiple inputs
 	   can be specified seprated by ;.  Each input set
@@ -38,14 +40,14 @@ Command may be shown as wrapped but it is really one longer command.
 	   keys in subsequent files overriding those 
 	   previously defined for the same key.   This 
 	   provides a simple form of inheritance where
-	   only the values that change between enviornment
+	   only the values that change between environment
 	   need to be listed while the rest can be inherited
 	   from a common parent.  If not specified defaults
 	   to data/config/simple/basic
 	  
 
    -URI=uri to reach console server.   
-        If seprated by ; will save to each server listed
+        If separated by ; will save to each server listed
 		defaults to http://127.0.0.1:8500 if not specified
 	
    -CACHE = name of files to use as cache file.  This
@@ -63,8 +65,12 @@ Command may be shown as wrapped but it is really one longer command.
    -appname = varabile used for interpolation
 
    other named parameters are treated in interpolated values
-   Most common error is forgetting - as prefix for named parms
+   Most common error is forgetting - as prefix for named 
+   parms
 ```
+
+
+
 * TODO: -runPull optional if present and set to "true" and when the source path is a directory the the system will run a git pull in that directory to fetch most recent copy of the config settings.
 * NOTE: Values returned from consul are base64 decoded.  You have to use a Base64 decoder to see what is actually saved in consul.  I was initially confused by this when consul looked like it was returning gibberish.
 
