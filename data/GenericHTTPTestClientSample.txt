@@ -1,0 +1,147 @@
+# See:  https://www.freeformatter.com/json-escape.html   for online JSON escape tool for post body.
+# See: https://jsonlint.com/  for online tool to validate the JSON
+# See: GenericHTTPTestClient.go for utility than runs this test file.
+
+{
+	"id": "0183",
+	"verb": "PUT",
+	"uri": "http://127.0.0.1:9601/mds/test/1817127X3",
+	"headers": {
+		"Content-Type": "application/JSON",
+		"Meta-Roles": "PUBLIC"
+	},
+	"expected": 200,
+	"rematch": ".*sucess.*",
+	"message": "saving JSON record",
+	"body": "{\"patientAgeRange\": \"NA\", \"orgName\": \"JOHN MUIR PHYSICIAN NETWORK\", \"combName\": \"PORTEOUS, BRENT\", \"product\": \"NA\", \"primaryLocation\": \"NA\", \"exclude\": false, \"uniqueLocKey\": \"JOHN MUIR PHYSICIAN NETWORK..1450 TREAT BLVD..945972168\", \"loc\": {\"lat\": 37.91, \"lon\": -122.07}, \"addr\": {\"city\": \"WALNUT CREEK\", \"zip\": \"945972168\", \"county\": \"NA\", \"state\": \"CA\", \"street\": \"1450 TREAT BLVD\", \"zipPlus4\": \"NA\"}, \"medicadeId\": \"6608789813\", \"languages\": \"NA\", \"email\": \"NA\", \"fax\": \"NA\", \"npi\": \"1083040463\", \"specialty\": [\"FAMILY PRACTICE\"], \"drName\": {\"middle\": \"\", \"last\": \"PORTEOUS\", \"suffix\": \"\", \"first\": \"BRENT\"}, \"phone\": \"9252969000\", \"publicTransitAccess\": \"NA\", \"handicapAccess\": \"NA\", \"credentials\": \"\", \"acceptMedicaid\": null, \"OfficeHours\": \"NA\", \"medSchool\": \"OTHER\", \"locations\": [{\"ccn\": \"050276\", \"lbn\": \"CONTRA COSTA REGIONAL MEDICAL CENTER\"}], \"gender\": \"M\", \"gradYear\": \"2012\"}"
+}
+#END
+
+
+#REM Explaining the generic DMS API.   Most of the work is done in the headers.       
+#REM  Any header with a "Meta" prefix is stored and returned as part of the HTTP fetch. 
+#REM  The system also stores content-type,  date modified and expires headers.   
+#REM  The assumption is that we use a separate indexing system to make searching by 
+#REM the Meta data fast but you can always retrieve by original by ID even without the
+#REM  additional indexing turned on.     The header fields can contain JSON structures
+#REM  but they must be escaped which makes them harder to read so I used a simpler 
+#REM  flat structure.      
+#REM 
+#REM The roles have evolved to support access by discreetly different audiences 
+#REM When it says “PROVIDER+TID-1827”  it implies that
+#REM  the calling user must be a member of  role “PROVIDER” 
+#REM and role “TID-1827”  Each of the comma separated values is considered an OR.  
+#REM I needed this semantic to grant access to both provider or patient or the 
+#REM CSR or corporate audit. 
+#REM 
+#REM The use of the “source”  element rather than the body allows the test driver to read 
+#REM the document to be placed in the DMS from a file rather than embedding in the JSON. 
+{
+	"id": "test-save-18172772X34",
+	"verb": "PUT",
+	"uri": "http://demo.bayesanalytic.com:9601:/mds/18172772x34",
+	"headers": {
+		"Content-Type": "application/JSON",
+		"Meta-Title": "XRay upper right for claim ID 237456 for PID 282828",
+		"Meta-Roles": "PROVIDER+TID-1827, DDMI+CSR, CORP+REVIEW, CORP+AUDIT, PATIENT+PIDS-19282, MEMBER+PIDS-12221",
+		"Meta-DocType": "XRAY",
+		"EXPIRES": "2028-01-03 23:59",
+		"KEYWORDS": "XRAY,MOUTH",
+		"Meta-PID": "282828",
+		"Meta-Provider-TID": "1827",
+		"Meta-location": "Upper-Right-Bitewing"
+	},
+	"expected": 200,
+	"rematch": ".*success.*",
+	"message": "saving 18172772x34",
+	"source": "test-data-source-18172772x34.jpg"
+}
+# Body is ignored when source is specified.  Source file contents are read and sent as body of post"
+#END
+
+
+#WAIT
+#  Pause causes the test driver to wait until all threads are idle before running next line. 
+
+
+{  "id" : "0184G",   "verb" : "GET",   "uri" : "http://127.0.0.1:9601/mds/test/1817127X3",  "expected" : 200, 
+   "rematch" : ".*JOHN MUIR.*", 
+   "message" :"Read after write"
+}
+#END
+
+#WAIT
+#  Pause causes the test driver to wait until all threads are idle before running next line. 
+
+
+# Test simple retrieve of a record that should exist.
+{  "id" : "0184M",   "verb" : "GET",   "uri" : "http://127.0.0.1:9601/mds/test/1817127X3",  "expected" : 200, 
+   "rematch" : ".*JOHN MUIR.*", 
+   "message" :"Read after write existing record"
+}
+#END
+
+
+# Test to Demonstrate failure when we get Data and shouldn't have received any.
+# Should fail
+{  "id" : "0184F",   "verb" : "GET",   "uri" : "http://127.0.0.1:9601/mds/test/1817127X3",  "expected" : 200, 
+   "Renomatch" : ".*JOHN MUIR.*", 
+   "message" :"Check re No Match functionality should fail"
+}
+#END
+
+
+# Test to verify record we do not expect to exist fails.
+# Should Suceed
+{  "id" : "0185",   "verb" : "GET",   "uri" : "http://127.0.0.1:9601/mds/test/1817127X5",  "expected" : 404, 
+   "Message" :"Check expected 404 on known bad key",
+   "Renomatch" : "*.JOHN*."
+}
+#END
+
+# Demontrate a failed test where the status code
+# is not what was expected.
+# Should suceed
+{  "id" : "0186",   "verb" : "GET",   "uri" : "http://127.0.0.1:9601/mds/test/1817127X5",  "expected" : 519, 
+   "Message" :"Check unepected response code "
+}
+#END
+
+
+
+#WAIT
+#  Wait until after the reads above have complete or could delete the records out from under them
+# Should Suceed
+{  "id" : "0187",   
+   "verb" : "DELETE",   
+   "uri" : "http://127.0.0.1:9601/mds/test/1817127X3",  
+   "message" : "Delete a JSON record",
+   "expected" : 200,
+   "xyz" : 983
+}
+#END
+
+#WAIT  
+#  Wait for the delete to complete so we can check for the 404
+#GET after delete of same ID should fail
+{  "id" : "0188",
+   "verb" : "GET",
+   "uri" : "http://127.0.0.1:9601/mds/test/1817127X3",
+   "expected" : 404,  
+   "Message" :"Read after delete"
+}
+#END
+
+
+
+# Second delete of same ID should fail
+
+#WAIT
+{  "id" : "0189",   
+   "verb" : "DELETE",   
+   "uri" : "http://127.0.0.1:9601/mds/test/1817127X3",  
+   "message" : "Delete a previously deleted record",
+   "expected" : 404 
+}
+#END
+#END
