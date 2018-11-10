@@ -1,22 +1,22 @@
 # file2consul - Loads config file contents into consul. 
 
-Consul provides a fairly simple KV configuration management system.  This works but the flat model can make supporting multiple environments that may contain hundreds of discrete configuration values onerous.  
+Consul provides a fairly simple KV configuration management system.  This works but the flat model can make supporting multiple environments that may contain hundreds of discrete configuration values onerous.   file2consul seeks to educes amount of work in managing configuration parameters.  It also minimizes  opportunities to manually introduce errors. 
 #### Environments are actually quite similar
 In many companies when building complex software that runs on more than one computer we call an environment the set of computers required to run 1 copy. 
 
-In most companies there is a PROD environment where the production software runs.  A UAT environment where the complete set is tested prior to release into production and TEST where developers can test their modules to be sure they work with other components planned to be released.   In larger companies it is not uncommon to have over a dozen of these enviornments.
+In most companies there is a PROD environment where the production software runs.  A UAT environment where the complete set is tested prior to release into production and TEST where developers can test their modules to be sure they work with other components planned to be released.   In larger companies it is not uncommon to have over a dozen of these environments.
 
  Building and maintaining the environments can be labor intensive because of all the configuration values that are slightly different between the environments.  This software seeks to make it easier to maintain multiple environments at a lower cost and with less effort. 
 
 In many cases a new environment is actually identical to an existing environment except for a small number of changed parameters. In other instances a configuration value may only changed based on a predictable value such as a environment name such. For example in a TST environment the DB server may be at test-orcle-main.abc.com while in the PROD environment it may be at prod-orcle-main.abc.com. 
 
 #### Minimize Cost & Opportunity for errors 
-file2consul seeks to minimize the total opportunity for manually introduced errors and the amount of work in managing configuration parameters by optimizing for use of these two patterns.  
-
 file2Consul uses interpolation and inheritance to allow a smaller set of configuration parameters to be used whenever values or keys change in predictable ways between environments. 
 
-Interpolation allows a single setting to be changed automatically between 
-environments.  A slot based inheritance model to support easier derived environments.   It will process the values in each parent in the tree sequentially building a new tree where subsequent derived environments may replace a subset of the configured environments.
+**Interpolation** allows a single setting to be changed automatically between 
+environments.  
+
+**Inheritance**  supports easier derived environments when the differences can not be easily handled by interpolation.     Values are processed from each parent sequentially building a new tree where subsequent derived environments may replace a subset of the configured environments.
 
 
 ## Basic Operation
@@ -46,22 +46,19 @@ file2consul-dumb -ENV=DEMO -COMPANY=ABC -APPNAME=file2consul-dumb -FILE=data/sim
  -env =  variable used for interpolation
  -company = variable used for interpolation
  -appname = varabile used for interpolation
-  other varaibles can be defined as needed
+  other variables can be defined as needed
 ```
-
-
-
-
 
 ## Basic Interpolation
 Basic interpolation allows interpolation of defied environment variables into existing values.  This can allow a single config 
 string to be used across multiple environments without requiring separate files.
 
-     $^ENV.DBServer=orcl.master.$^ENV
+     {ENV}.DBServer=orcl.master.{ENV}
      
-     Assuming the an environment variable ENV has been defined as UAT01
-     the key becomes UAT01.DBServer while the value became orcl.master.UAT01.  Interpolation can occur on either the key
-     and or the data values.
+     Assuming the a variable ENV has been defined as UAT01
+     the key becomes UAT01.DBServer while the value became 
+     orcl.master.UAT01.  Interpolation can occur on either 
+     the key and or the data values.
 
 ## Using Ancestor Overrides
 

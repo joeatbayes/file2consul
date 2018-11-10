@@ -9,7 +9,9 @@ import (
 	"bytes"
 	"fmt"
 	"os"
+	"regexp"
 	"strconv"
+	"strings"
 	s "strings"
 )
 
@@ -235,6 +237,43 @@ func (parg *ParsedCommandArgs) SListDict(aname string) map[string]int {
 		}
 	}
 	return tout
+}
+
+var str = "Old Value!"
+var ParmMatch, ParmErr = regexp.Compile("\\{.*?\\}")
+
+func Interpolate(str string, parg *ParsedCommandArgs) string {
+	ms := ParmMatch.FindAllIndex([]byte(str), -1)
+	if len(ms) < 1 {
+		return str // no match found
+	}
+	//sb := strings.Builder
+	var sb []string
+	last := 0
+	slen := len(str)
+	for _, m := range ms {
+		start, end := m[0]+1, m[1]-1
+		//fmt.Printf("m[0]=%d m[1]=%d match = %q\n", m[0], m[1], str[start:end])
+		if start > last-1 {
+			// add the string before the match to the buffer
+			sb = append(sb, str[last:start-1])
+		}
+		aMatchStr := strings.ToLower(str[start:end])
+		// substitute match string with parms value
+		// or add it back in with the {} protecting it
+		// TODO: Add lookup from enviornment variable
+		//  if do not find it in the command line parms
+		lookVal := parg.Sval(strings.ToLower(aMatchStr), "{"+aMatchStr+"}")
+		//fmt.Printf("matchStr=%s  lookVal=%s\n", aMatchStr, lookVal)
+		sb = append(sb, lookVal)
+		last = end + 1
+	}
+	if last < slen-1 {
+		// append any remaining characters after
+		// end of the last match
+		sb = append(sb, str[last:slen])
+	}
+	return strings.Join(sb, "")
 }
 
 func CommandLineParserTest() {

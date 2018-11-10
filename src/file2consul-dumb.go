@@ -9,79 +9,11 @@ import (
 	"fmt"
 	//"io/ioutil"
 	"jutil"
-	"net/http"
+	//"net/http"
 	"os"
-	"regexp"
 	"strings"
-	"time"
+	//"time"
 )
-
-var str = "Old Value!"
-var ParmMatch, ParmErr = regexp.Compile("\\{.*?\\}")
-
-func setConsulKey(serverURI string, key string, val string) {
-	fmt.Println("setConsulKey key=", key, " value=", val)
-	uri := serverURI + "/v1/kv/" + key
-	val = "sample data value"
-	//fmt.Println("uri=", uri)
-	start := time.Now().UTC()
-	hc := http.Client{}
-	req, err := http.NewRequest("PUT", uri, strings.NewReader(val))
-	if err != nil {
-		fmt.Println("Error: opening uri=", uri, " err=", err, " key=", key, "  val=", val)
-		return
-	}
-
-	resp, err := hc.Do(req)
-	if err != nil {
-		fmt.Println("Error: uri=", uri, " err=", err)
-		return
-	}
-
-	if resp.StatusCode != 200 {
-		fmt.Println("Error: Expected Status Code 200, Got ", resp.StatusCode)
-	} else {
-		//fmt.Println("Sucess:")
-	}
-	//body, _ := ioutil.ReadAll(resp.Body)
-	jutil.TimeTrack(os.Stdout, start, "finished single PUT uri="+uri+"\n")
-	//fmt.Println("statusCode=", resp.StatusCode)
-	//fmt.Println(" body=", string(body))
-}
-
-func interpolate(str string, parg *jutil.ParsedCommandArgs) string {
-	ms := ParmMatch.FindAllIndex([]byte(str), -1)
-	if len(ms) < 1 {
-		return str // no match found
-	}
-	//sb := strings.Builder
-	var sb []string
-	last := 0
-	slen := len(str)
-	for _, m := range ms {
-		start, end := m[0]+1, m[1]-1
-		//fmt.Printf("m[0]=%d m[1]=%d match = %q\n", m[0], m[1], str[start:end])
-		if start > last-1 {
-			// add the string before the match to the buffer
-			sb = append(sb, str[last:start-1])
-		}
-		aMatchStr := strings.ToLower(str[start:end])
-		// substitute match string with parms value
-		// or add it back in with the {} protecting it
-		// TODO: Add lookup from enviornment variable
-		//  if do not find it in the command line parms
-		lookVal := parg.Sval(strings.ToLower(aMatchStr), "{"+aMatchStr+"}")
-		//fmt.Printf("matchStr=%s  lookVal=%s\n", aMatchStr, lookVal)
-		sb = append(sb, lookVal)
-		last = end + 1
-	}
-	if last < slen-1 {
-		// append any remaining characters after
-		// end of the last match
-		sb = append(sb, str[last:slen])
-	}
-	return strings.Join(sb, "")
-}
 
 func main() {
 
@@ -130,10 +62,10 @@ func main() {
 			fmt.Println("line#", lineCnt, "fails split on = test", " line=", aline)
 			continue
 		}
-		aKey := interpolate(arr[0], pargs)
-		aVal := interpolate(arr[1], pargs)
+		aKey := jutil.Interpolate(arr[0], pargs)
+		aVal := jutil.Interpolate(arr[1], pargs)
 		fmt.Println("after interpolate aKey=", aKey, " aVal=", aVal)
-		setConsulKey(serverURI, aKey, aVal)
+		jutil.SetConsulKey(serverURI, aKey, aVal)
 		fmt.Println("\n")
 
 	} // for
