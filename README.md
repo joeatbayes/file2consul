@@ -2,7 +2,11 @@
 
 Consul provides a fairly simple KV configuration management system.  This works but the flat model can make supporting multiple environments that may contain hundreds of discrete configuration values onerous.  
 #### Environments are actually quite similar
-In many companies when building complex software that runs on more than one computer we call an environment the set of computers required to run 1 copy. In most companies there is a PROD environment where the production software runs.  They generally also have UAT  where the complete set is tested prior to release into production and TEST where developers can test their modules to be sure they work with other components planned to be released.    Building and maintaining the environments can be labor intensive because of all the configuration values that are different between the environments.  This software seeks to make it easier to maintain multiple environments at a lower cost and with less effort. 
+In many companies when building complex software that runs on more than one computer we call an environment the set of computers required to run 1 copy. 
+
+In most companies there is a PROD environment where the production software runs.  A UAT environment where the complete set is tested prior to release into production and TEST where developers can test their modules to be sure they work with other components planned to be released.   In larger companies it is not uncommon to have over a dozen of these enviornments.
+
+ Building and maintaining the environments can be labor intensive because of all the configuration values that are slightly different between the environments.  This software seeks to make it easier to maintain multiple environments at a lower cost and with less effort. 
 
 In many cases a new environment is actually identical to an existing environment except for a small number of changed parameters. In other instances a configuration value may only changed based on a predictable value such as a environment name such. For example in a TST environment the DB server may be at test-orcle-main.abc.com while in the PROD environment it may be at prod-orcle-main.abc.com. 
 
@@ -42,6 +46,7 @@ file2consul-dumb -ENV=DEMO -COMPANY=ABC -APPNAME=file2consul-dumb -FILE=data/sim
  -env =  variable used for interpolation
  -company = variable used for interpolation
  -appname = varabile used for interpolation
+  other varaibles can be defined as needed
 ```
 
 
@@ -79,8 +84,8 @@ git clone https://github.com/joeatbayes/file2consul.git
 
 * Or Download using HTTP   Open the following URI in your browser https://github.com/joeatbayes/file2consul/archive/master.zip   Once downloaded save in your desired directory and unzip.    You will need to be able to open a shell at that directory
 
-* Add the directory where you copied the source to your [search PATH](http://www.linfo.org/path_env_var.html)  This can be done temporarily by running the [setGOEnv.bat](setGOEnv.bat) on windows or [setGOEnv.sh](setGOEnv.sh) on linux or mac.  These are included in the downloaded repository.
-* Build the software by running  [makeGO.sh][makeGO.sh] on linux or running [makeGO.bat](makeGO.bat) on windows.   It should produce several executable files including file2Consul.exe on windows or a executable file2Consul on linux.
+* Add the directory where you copied the source to your [search PATH](http://www.linfo.org/path_env_var.html)  This can be done temporarily by running the [setGOEnv.bat](setGOEnv.bat) on windows or [setGOEnv.sh](setGOEnv.sh) on Linux or mac.  These are included in the downloaded repository.
+* Build the software by running  [makeGO.sh][makeGO.sh] on Linux or running [makeGO.bat](makeGO.bat) on windows.   It should produce several executable files including file2Consul.exe on windows or a executable file2Consul on Linux.
 * The file2Consule [executable](http://www.linfo.org/executable.html) can be copied to any location in the [search PATH](http://www.linfo.org/path_env_var.html).  It will always look for files relative to the [current working directory](http://www.informit.com/articles/article.aspx?p=2468330&seqNum=15) unless the paths specified on the command line are [absolute paths](https://www.linux.com/blog/absolute-path-vs-relative-path-linuxunix).   We generally leave our in the same directory where we downloaded the repository to make it easy access our sample input files.
 * 
 
@@ -94,7 +99,7 @@ git clone https://github.com/joeatbayes/file2consul.git
 
 
 
-* [makeGo.sh linux](makeGO.sh)  [makeGO.bat Windows](makeGO.bat)  Builds the main executables from the GOLang sourcecode
+* [makeGo.sh linux](makeGO.sh)  [makeGO.bat Windows](makeGO.bat)  Builds the main executables from the GO Lang source code
 * [License](LICENSE.md)
 
 ## Reference
