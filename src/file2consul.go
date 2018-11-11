@@ -169,8 +169,8 @@ func main() {
 		fmt.Println(msg)
 	}
 
-	inPaths := strings.Split(pargs.Sval("in", "data/config/simple/basic"), ";")
-	serverURIs := strings.Split(pargs.Sval("uri", "http://127.0.0.1:8500"), ";")
+	inPaths := strings.Split(pargs.Sval("in", "data/config/simple/basic"), "::")
+	serverURIs := strings.Split(pargs.Sval("uri", "http://127.0.0.1:8500"), "::")
 	cacheFiName := pargs.Interpolate(pargs.Sval("cache", ""))
 	fmt.Println("inPaths=", inPaths, " consul server URI=", serverURIs, "cacheFiName="+cacheFiName)
 	inDict := loadInFiles(inPaths, pargs, true)

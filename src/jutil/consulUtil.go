@@ -11,7 +11,6 @@ import (
 func SetConsulKey(serverURI string, key string, val string) {
 	fmt.Println("setConsulKey key=", key, " value=", val)
 	uri := serverURI + "/v1/kv/" + key
-	val = "sample data value"
 	//fmt.Println("uri=", uri)
 	start := time.Now().UTC()
 	hc := http.Client{}
@@ -20,7 +19,6 @@ func SetConsulKey(serverURI string, key string, val string) {
 		fmt.Println("Error: opening uri=", uri, " err=", err, " key=", key, "  val=", val)
 		return
 	}
-
 	resp, err := hc.Do(req)
 	if err != nil {
 		fmt.Println("Error: uri=", uri, " err=", err)

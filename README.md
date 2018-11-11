@@ -26,16 +26,22 @@ environments.
 > Look at the sample configuration files in [data/config/simple](data/config/simple) they are the best way to learn about how to use file2consule to reduce manual work. 
 
 ```sh
-file2consul -ENV=PROD -COMPANY=ABC -APPNAME=peopleSearch -IN=data/config/simple/template;data/config/simple/prod; -uri=http://127.0.0.1:8500 -CACHE=data/{env}.{appname}.CACHE.b64.txt
+file2consul -ENV=PROD -COMPANY=ABC -APPNAME=peopleSearch -IN=data/config/simple/template::data/config/simple/prod -uri=http://127.0.0.1:8500 -CACHE=data/{env}.{appname}.CACHE.b64.txt
 
-#Command may be shown as wrapped but it is really one longer command. 
+#Command may be shown as wrapped but it is really one longer command.
+
+# If current directory is not in search path then you
+#   may need to modify to change from file2consul to 
+#   ./fileconsul on linux or .\file2consul on windows.
 ```
 
 ```
    -IN=name of input parameter file or directory
        If named resource is directory will process all 
 	   files in that directory.    Multiple inputs
-	   can be specified seprated by ;.  Each input set
+	   can be specified seprated by :: .  Each 
+	   input set
+	   
 	   will be processed in order with any duplicate 
 	   keys in subsequent files overriding those 
 	   previously defined for the same key.   This 
@@ -47,8 +53,9 @@ file2consul -ENV=PROD -COMPANY=ABC -APPNAME=peopleSearch -IN=data/config/simple/
 	  
 
    -URI=uri to reach console server.   
-        If separated by ; will save to each server listed
-		defaults to http://127.0.0.1:8500 if not specified
+        If separated by :: (colon) will save to each 
+        server listed defaults to http://127.0.0.1:8500
+        if not specified
 	
    -CACHE = name of files to use as cache file.  This
       file is read and compared to the post processing 
@@ -79,7 +86,7 @@ file2consul -ENV=PROD -COMPANY=ABC -APPNAME=peopleSearch -IN=data/config/simple/
  showing inheritance overrides with values derived from the higher order environments.   This example is one of the more complex where we are actually building an environment configuration for a individual developer but rather than specify everything we specify an order where we process first the base Template then Prod, Then UAT, then DEV and finally joes special properties.  This allows to ensure that we have all the basic settings identical to PROD and then change those as we work down through the other environments.   This helps prevent lower order environments from accidentally being different than prod.   While this does help with consistency we used the {env} in all the key names so even though some of the basic configuration came from prod we can be sure we do not accidentally change prod config values.    We also use {env} and other variables in several of the  data bodies to give vips that have similar but predictably different names differentiation so they do not conflict with prod assets.
 
 ```sh
-file2consul -ENV=JTEST -COMPANY=ACME -APPNAME=peopleSearch -IN=data/config/simple/template;data/config/simple/prod;data/config/simple/uat;data/config/simple/dev;data/config/simple/joes-dev.prop.txt -uri=http://127.0.0.1:8500
+file2consul -ENV=JTEST -COMPANY=ACME -APPNAME=peopleSearch -IN=data/config/simple/template::data/config/simple/prod::data/config/simple/uat::data/config/simple/dev::data/config/simple/joes-dev.prop.txt -uri=http://127.0.0.1:8500
 
 #Command may be shown as wrapped but it is really one longer command.   
 
