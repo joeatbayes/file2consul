@@ -214,7 +214,8 @@ I give first priority to features and bug fixes from people willing to pay my ho
 * ##### Consul
 
   * [Consul download Page](https://www.consul.io/downloads.html)
-  * [Consul http API guide](https://www.consul.io/api/index.html),   [kv api](https://www.consul.io/api/kv.html)
+  * [Consul http API guide](https://www.consul.io/api/index.html),
+  * [Consul   kv api](https://www.consul.io/api/kv.html)
   * [Consul ACL security guide](https://www.consul.io/docs/guides/acl.html) 
   * [consul kv by example](https://github.com/JoergM/consul-examples/tree/master/http_api)
   * [Getting started with consul KV](https://learn.hashicorp.com/consul/getting-started/kv.html)  example with command line instead of http
