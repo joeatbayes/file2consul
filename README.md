@@ -214,5 +214,12 @@ I give first priority to features and bug fixes from people willing to pay my ho
 * ##### Consul
 
   * [Consul download Page](https://www.consul.io/downloads.html)
-  * [Consul http API guide](https://www.consul.io/api/index.html) 
+  * [Consul http API guide](https://www.consul.io/api/index.html),   [kv api](https://www.consul.io/api/kv.html)
   * [Consul ACL security guide](https://www.consul.io/docs/guides/acl.html) 
+  * [consul kv by example](https://github.com/JoergM/consul-examples/tree/master/http_api)
+  * [Getting started with consul KV](https://learn.hashicorp.com/consul/getting-started/kv.html)  example with command line instead of http
+  * [Blog first look of kv interface in consul](http://alesnosek.com/blog/2017/07/15/first-look-at-the-key-value-store-in-consul/)
+  * [Tutorials point consul introduction](https://www.tutorialspoint.com/consul/consul_quick_guide.htm)
+  * [Consul cheat sheet](https://lzone.de/cheat-sheet/Consul)
+  * [consul python api](http://www.voidcn.com/article/p-hjdesarg-up.html)
+
