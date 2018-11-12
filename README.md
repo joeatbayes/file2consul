@@ -142,15 +142,14 @@ file2consul-dumb -ENV=DEMO -COMPANY=ABC -APPNAME=file2consul-dumb -FILE=data/con
 Basic interpolation allows interpolation of defied environment variables into existing values.  This can allow a single config 
 string to be used across multiple environments without requiring separate files.
 
-     {ENV}.DBServer=orcl.master.{ENV}
+     {ENV}/DBServer=orcl.master.{ENV}
      
      Assuming the a variable ENV has been defined as UAT01
      the key becomes UAT01.DBServer while the value became 
      orcl.master.UAT01.  Interpolation can occur on either 
      the key and or the data values or both.
      
-     Interpolation variables can be defined on the command line using the -varaible notation  There are a few predefined named parameters the program uses for it's own operation such as -uri which indicates the set of URI it should use to talk to consul.   Even these pre-defined variables are available for use
-     in interpolation. 
+     Interpolation variables can be defined on the command line using the -varaible notation  There are a few predefined named parameters the program uses for it's own operation such as -uri which indicates the set of URI it should use to talk to consul.   Even these pre-defined variables are available for use in interpolation. 
 
 ## Using Ancestor Overrides
 
@@ -159,6 +158,36 @@ Ancestor overrides allow for changes that are specific to an environment that ca
 Sample Usage
 
 TODO:  Add more detail here
+
+## Concatenating multiple Lines
+
+```
+{env}/register/vip/members = S1811717127.{env}.{company}.com
+  + S1811717128.{env}.{company}.com
+  + S1811717129.{env}.{company}.com
+  + S1811717130.{env}.{company}.com
+```
+
+Starting a line with + indicates you want to add the value on that line into the last key.  This makes it easier to break long values into smaller lines while editing and still save them in a single consul Value for that key.    The values are delimited with \t to make it easier 
+
+## Including External Files
+
+```ini
+{ENV}/payments/vip/members=@../payments.vip.members.ini
+  
+  # When the first character of a value starts 
+  # with @ the system will attempt to find a file
+  # a file of that name relative to the file where
+  # it was mentioned.   It will include that file
+  # as the value for that key.   Interpolation is done
+  # on both the file name and the file contents if it
+  # is found.   If the file is not found then then
+  # unmodified string will be kept as it's value. 
+  # and a warning message will be printed.  This was
+  # designed to make it easier to include larger lists 
+  # of values like members in a VIP rather than using
+  # the + concatenation semantic above.
+```
 
 
 ## Build & Setup
@@ -223,4 +252,3 @@ I give first priority to features and bug fixes from people willing to pay my ho
   * [Tutorials point consul introduction](https://www.tutorialspoint.com/consul/consul_quick_guide.htm)
   * [Consul cheat sheet](https://lzone.de/cheat-sheet/Consul)
   * [consul python api](http://www.voidcn.com/article/p-hjdesarg-up.html)
-

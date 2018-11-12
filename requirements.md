@@ -9,6 +9,7 @@ Requirements for file to consul under consideration for future work
 * Update data/config/simple samples for a larger example set of properties.
 * Update documentation to better explain inheritance override versus interpolation.
 * Document what happens when a value that should not be interpolated such as {radomstring} occurs in file and does not have a overlapping variable defined.
+* Double check the + concat function works when first line defining the key contained no data string.
 
 # Under Consideration 
 
