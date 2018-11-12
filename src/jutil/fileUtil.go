@@ -88,6 +88,8 @@ func SaveDictToFile(sdict map[string]string, fiName string, b64Val bool, pargs *
 		if b64Val {
 			saveStr = key + "=" + base64.StdEncoding.EncodeToString([]byte(val)) + "\n"
 		} else {
+			val = strings.Replace(val, "\n", "\t", -1) // must replace embeded CR or will mess up readability.
+			val = strings.Replace(val, "\r", " ", -1)  // in saved dictionary
 			saveStr = key + "=" + val + "\n"
 		}
 		if verboseFlg {

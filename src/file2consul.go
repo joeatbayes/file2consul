@@ -14,7 +14,9 @@ import (
 	//"net/http"
 	"os"
 	"strings"
+
 	//"time"
+	"path/filepath"
 )
 
 // Parse a simple key value properties file
@@ -74,9 +76,36 @@ func loadFileAsDict(inFiName string, target map[string]string, pargs *jutil.Pars
 		}
 		aKey = strings.TrimSpace(aKey)
 		aVal = strings.TrimSpace(aVal)
-		// TODO:  Detect @ as first character of file to load file relative to current file
-		//   for value instead of using included string.
 		target[aKey] = aVal
+		if strings.HasPrefix(aVal, "@") {
+			//  If first character of the values starts with @
+			//  then attempt to load the contents of that file
+			//  and replace the value with those contents.
+			currDir := filepath.Dir(inFiName)
+			reqPath := aVal[1:]
+			newPath := currDir + "/" + reqPath
+			if verboseFlg {
+				fmt.Println("Attempt to load referenced File requested=", aVal, " derivedName=", newPath)
+			}
+			if jutil.IsDirectory(newPath) {
+				fmt.Println("ERROR: loadFileAsDict: Included File can not be directory requested=", newPath, " err=", err)
+			} else if jutil.Exists(newPath) {
+				dat, err := ioutil.ReadFile(newPath)
+				if err != nil {
+					fmt.Println("ERROR: loadFileAsDict: Error reading referenced file=", newPath, " err=", err)
+				} else {
+					aVal = string(dat)
+					if verboseFlg {
+						fmt.Println("loadFileAsDict: Loaded ", len(dat), " bytes from referenced file=", newPath)
+					}
+					aVal = pargs.Interpolate(aVal) // want the fully interpolated value override for the print.
+					target[aKey] = aVal
+				}
+			} else {
+				fmt.Println("ERROR: loadFileAsDict Can not find referenced file requested=", aVal, " derivedName=", newPath)
+			}
+		} // include file
+
 		lastKey = aKey
 		if verboseFlg {
 			fmt.Println("key=", aKey, " val=", aVal)

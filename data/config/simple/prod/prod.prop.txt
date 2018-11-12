@@ -23,7 +23,7 @@
   # consul.  Any leading or trailing spaces are also 
   # removed to make future splitting on \t easy.
   
-{ENV}.payments.vip.members=@../{ENV}.payments.vip.members.ini
+{ENV}.payments.vip.members=@../payments.vip.members.ini
   # Demonstrate including a file where the file name
   # is relative to the file where the include is mentioned.
   # also generating the actual file name from a variable.
