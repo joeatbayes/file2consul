@@ -69,11 +69,14 @@ func MapBadIDChar(strIn string) string {
 /* save dictionary to file.  Use base64 encoding for values
 because some values may contain vertical whitespace When b64Val
 is true then encode the values otherwise write them native.*/
-func SaveDictToFile(sdict map[string]string, fiName string, b64Val bool) {
+func SaveDictToFile(sdict map[string]string, fiName string, b64Val bool, pargs *ParsedCommandArgs) {
 	// TODO: May be faster to endode this in a in memory
 	// butter and write as a block.
 	start := Nowms()
-	//fmt.Println("save dict to ", fiName)
+	verboseFlg := pargs.Exists("verbose")
+	if verboseFlg {
+		fmt.Println("SaveDictToFile ", fiName, " b64Val=", b64Val)
+	}
 	f, err := os.Create(fiName)
 	if err != nil {
 		fmt.Println("ERROR: opening dict file for write fiName=", fiName, " err=", err)
@@ -87,7 +90,9 @@ func SaveDictToFile(sdict map[string]string, fiName string, b64Val bool) {
 		} else {
 			saveStr = key + "=" + val + "\n"
 		}
-		//fmt.Println("saveStr=", saveStr)
+		if verboseFlg {
+			fmt.Println("saveStr=", saveStr)
+		}
 		_, err := f.WriteString(saveStr)
 		if err != nil {
 			fmt.Println("ERROR: writing to ", fiName, " err=", err)
@@ -100,8 +105,12 @@ func SaveDictToFile(sdict map[string]string, fiName string, b64Val bool) {
 	Elap("saveDictFile "+fiName, start, Nowms())
 }
 
-func LoadDictFile(inFiName string, b64Decode bool) map[string]string {
+func LoadDictFile(inFiName string, b64Decode bool, pargs *ParsedCommandArgs) map[string]string {
 	start := Nowms()
+	verboseFlg := pargs.Exists("verbose")
+	if verboseFlg {
+		fmt.Println("LoadDictFile ", inFiName, "b64Decode=", b64Decode)
+	}
 	tout := make(map[string]string)
 	inFile, err := os.Open(inFiName)
 	if err != nil {
@@ -133,7 +142,9 @@ func LoadDictFile(inFiName string, b64Decode bool) map[string]string {
 			aVal = string(uDec)
 		}
 		tout[aKey] = aVal
-		//fmt.Println("LoadDictFile: key=", aKey, " val=", aVal)
+		if verboseFlg {
+			fmt.Println("LoadDictFile: key=", aKey, " val=", aVal)
+		}
 	}
 	Elap("loadDictFile "+inFiName, start, Nowms())
 	return tout

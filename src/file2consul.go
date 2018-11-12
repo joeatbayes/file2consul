@@ -23,13 +23,18 @@ import (
 // the intent is to call it with multiple files and
 // interpolate the results.
 func loadFileAsDict(inFiName string, target map[string]string, pargs *jutil.ParsedCommandArgs, doInterpolate bool) {
+	start := jutil.Nowms()
+	verboseFlg := pargs.Exists("verbose")
 	inFile, err := os.Open(inFiName)
 	if err != nil {
-		fmt.Println("error opening input file ", inFiName, " err=", err)
+		fmt.Println("ERROR: loadFileAsDict opening input file ", inFiName, " err=", err)
 	}
 	defer inFile.Close()
 	scanner := bufio.NewScanner(inFile)
 	printLinesFlg := pargs.Exists("printlines")
+	if verboseFlg {
+		fmt.Println("loadFileAsDict ", inFiName, "doInterpolate=", doInterpolate)
+	}
 	lineCnt := 0
 	lastKey := ""
 	for scanner.Scan() {
@@ -55,7 +60,7 @@ func loadFileAsDict(inFiName string, target map[string]string, pargs *jutil.Pars
 
 		arr := strings.SplitN(aline, "=", 2)
 		if len(arr) != 2 {
-			fmt.Println("line#", lineCnt, "fails split on = test", " line=", aline)
+			fmt.Println("NOTE: line#", lineCnt, "fails split on = test", " line=", aline)
 			continue
 		}
 		var aKey string
@@ -73,16 +78,24 @@ func loadFileAsDict(inFiName string, target map[string]string, pargs *jutil.Pars
 		//   for value instead of using included string.
 		target[aKey] = aVal
 		lastKey = aKey
-		fmt.Println("key=", aKey, " val=", aVal)
+		if verboseFlg {
+			fmt.Println("key=", aKey, " val=", aVal)
+		}
+	}
+	if verboseFlg {
+		jutil.Elap("loadFileAsDict "+inFiName, start, jutil.Nowms())
 	}
 }
 
 func loadInFiles(inPaths []string, pargs *jutil.ParsedCommandArgs, doInterpolate bool) map[string]string {
+	verboseFlg := pargs.Exists("verbose")
 	start := jutil.Nowms()
 	inDict := make(map[string]string) // Stores out built up set of config parameters
 	// Load all the specified paths into the dictionary
 	for i, apath := range inPaths {
-		fmt.Println("Process Path=", apath, "ndx=", i)
+		if verboseFlg {
+			fmt.Println("Process Path=", apath, "ndx=", i)
+		}
 		if !(jutil.Exists(apath)) {
 			fmt.Println("ERROR: input path does not exist", apath)
 			continue
@@ -97,7 +110,9 @@ func loadInFiles(inPaths []string, pargs *jutil.ParsedCommandArgs, doInterpolate
 
 			for _, f := range files {
 				fName := apath + "/" + f.Name()
-				fmt.Println("  Process File=", fName)
+				if verboseFlg {
+					fmt.Println("  Process File=", fName)
+				}
 				loadFileAsDict(fName, inDict, pargs, doInterpolate)
 			}
 		} else {
@@ -109,28 +124,29 @@ func loadInFiles(inPaths []string, pargs *jutil.ParsedCommandArgs, doInterpolate
 	return inDict
 }
 
-func obtainChangedItems(sdict map[string]string) map[string]string {
-
-	return nil
-}
-
 // Create log file entry for the current run showing variables saved to consul
 // along with details of the run.
 func logChangedItems(sdict map[string]string, fiName string, pargs *jutil.ParsedCommandArgs) {
-
+	//verboseFlg := pargs.Exists("verbose")
 }
 
-func saveValuesToConsul(sdict map[string]string, serverURI string) {
+func saveValuesToConsul(sdict map[string]string, serverURI string, pargs *jutil.ParsedCommandArgs) {
+	verboseFlg := pargs.Exists("verbose")
 	start := jutil.Nowms()
+	if verboseFlg {
+		fmt.Println("saveValuesToConsul ", serverURI, " numItems=", len(sdict))
+	}
 	for akey, aval := range sdict {
 		jutil.SetConsulKey(serverURI, akey, aval)
 	}
+
 	jutil.Elap("Save Values to Consul "+serverURI, start, jutil.Nowms())
+
 }
 
-func saveValuesToConsuls(sdict map[string]string, serverURIs []string) {
+func saveValuesToConsuls(sdict map[string]string, serverURIs []string, pargs *jutil.ParsedCommandArgs) {
 	for _, serverURI := range serverURIs {
-		saveValuesToConsul(sdict, serverURI)
+		saveValuesToConsul(sdict, serverURI, pargs)
 	}
 }
 
@@ -173,6 +189,14 @@ func main() {
    -PATHDELIM =  Delimiter to use when splitting list of 
      files, paths or URI for fields like -URI, -IN.   Defaults
 	 to :: when not set.
+	       
+   -PRINTLINES when this value is specified the
+     system will print every input line as it is read
+     to help in diagnostics.
+     
+   -VERBOSE When this value is specified the system 
+     will print additional details about values as 
+     they are set or re-set during the run. 
 		
    -appname = variable used for interpolation
    -env =  variable used for interpolation
@@ -191,37 +215,53 @@ func main() {
 	serverURIs := strings.Split(serverURIStr, pathDelim)
 	serverURIStrFlgChk := strings.ToUpper(serverURIStr)
 	cacheFiName := pargs.Interpolate(pargs.Sval("cache", ""))
-	fmt.Println("pathDelim=", pathDelim, " inPaths=", inPaths, " consul server URI=", serverURIs, " cacheFiName=", cacheFiName)
+	verboseFlg := pargs.Exists("verbose")
+	saveReadable := pargs.Interpolate(pargs.Sval("savereadable", "NONE"))
+	if verboseFlg {
+		fmt.Println("pathDelim=", pathDelim, " inPaths=", inPaths, " consul server URI=", serverURIs, " cacheFiName=", cacheFiName)
+	}
 	inDict := loadInFiles(inPaths, pargs, true)
-	//fmt.Println("inDict=", inDict)
+	if verboseFlg {
+		fmt.Println("inDict=", inDict)
+	}
+
+	if serverURIStrFlgChk != "NONE" {
+		fmt.Println("NOTE: Skip save to Consule and update of Cache file because -uri == NONE")
+	}
 
 	if cacheFiName > "" {
 		// If the cache file is specified then we only want
 		// to send Delta to consul.
 		if jutil.Exists(cacheFiName) {
-			cacheDict := jutil.LoadDictFile(cacheFiName, true)
+			cacheDict := jutil.LoadDictFile(cacheFiName, true, pargs)
 			deltaDict := jutil.CompareStrDict(cacheDict, inDict)
 			if len(deltaDict) < 1 {
-				fmt.Println("NOTE: No Values have changed, Not need to update consul")
+				fmt.Println("NOTE: No Values have changed since cache last updated, Not need to update consul")
 			} else if serverURIStrFlgChk != "NONE" {
-				saveValuesToConsuls(deltaDict, serverURIs)
+				if verboseFlg {
+					fmt.Println("NOTE: Only need to save ", len(deltaDict), " items to Consul due to cache check")
+				}
+				saveValuesToConsuls(deltaDict, serverURIs, pargs)
 			}
 		} else if serverURIStrFlgChk != "NONE" {
 			// dictionary file did not exist yet so need to
 			// send entire set to consul.
-			saveValuesToConsuls(inDict, serverURIs)
+			saveValuesToConsuls(inDict, serverURIs, pargs)
 		}
 		if serverURIStrFlgChk != "NONE" {
-			jutil.SaveDictToFile(inDict, cacheFiName, true)
+			jutil.SaveDictToFile(inDict, cacheFiName, true, pargs)
 		}
 	} else if serverURIStrFlgChk != "NONE" {
+		// NO Cache is specified so no need to save the
+		// values to consul
 		// save entire file set to Consul since
 		// we are not using the cache.
-		saveValuesToConsuls(inDict, serverURIs)
+		saveValuesToConsuls(inDict, serverURIs, pargs)
 	}
 
-	if cacheFiName > "" {
-
+	if saveReadable != "NONE" {
+		// save a human readable file to allow easier debugging
+		jutil.SaveDictToFile(inDict, saveReadable, false, pargs)
 	}
 	jutil.Elap("file2Consul complete run", start, jutil.Nowms())
 

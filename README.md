@@ -26,7 +26,7 @@ environments.
 > Look at the sample configuration files in [data/config/simple](data/config/simple) they are the best way to learn about how to use file2consule to reduce manual work. 
 
 ```sh
-file2consul -ENV=PROD -COMPANY=ABC -APPNAME=peopleSearch -IN=data/config/simple/template::data/config/simple/prod -uri=http://127.0.0.1:8500 -CACHE=data/{env}.{appname}.CACHE.b64.txt
+file2consul -ENV=PROD -COMPANY=ABC -APPNAME=peopleSearch -IN=data/config/simple/template::data/config/simple/prod -uri=http://127.0.0.1:8500 -CACHE=data/{env}.{appname}.CACHE.b64.txt  -savereadable=data/{env}.lastrun.txt.ini -printlines -verbose 
 
 #Command may be shown as wrapped but it is really one longer command.
 
@@ -74,9 +74,17 @@ file2consul -ENV=PROD -COMPANY=ABC -APPNAME=peopleSearch -IN=data/config/simple/
        files, paths or URI for fields like -URI, -IN.   
        Defaults to :: when not set.
        
-   -PRINTLINES = Flag when this value is specified the
+   -PRINTLINES when this value is specified the
      system will print every input line as it is read
      to help in diagnostics.
+     
+   -VERBOSE When this value is specified the system 
+     will print additional details about values as 
+     they are set or re-set during the run. 
+   
+   -SAVEREADABLE=filename when specified the system will 
+      save a human readable version of the keys, values
+      after interpolation to the named file. 
    
    -appname = variable used for interpolation
    -env =  variable used for interpolation
@@ -88,7 +96,8 @@ file2consul -ENV=PROD -COMPANY=ABC -APPNAME=peopleSearch -IN=data/config/simple/
    parms
 ```
 
-
+> Performance Note:  Remove the -verbose and -printlines flags and the system will run much faster. 
+>
 
 * TODO: -runPull optional if present and set to "true" and when the source path is a directory the the system will run a git pull in that directory to fetch most recent copy of the config settings.
 * NOTE: Values returned from consul are base64 decoded.  You have to use a Base64 decoder to see what is actually saved in consul.  I was initially confused by this when consul looked like it was returning gibberish.
@@ -156,7 +165,15 @@ TODO:  Add more detail here
 
 This software has been tested to build on Windows10,  Ubuntu,  MacOS. It should run fine on any computer where GO is available.  GO is only needed at build time, You can distribute the executable file without GO present.   
 
-Install GO compiler which can be downloaded from https://golang.org/dl/ 
+#### Prebuilt Binaries Download
+
+* [Prebuilt binaries from  file2consul wiki](https://raw.githubusercontent.com/wiki/joeatbayes/file2consul/builds/most-recent/README.md)
+
+  We moved the binaries out of the main repository because they were consuming a lot of space due to frequent updates.   We will now place builds when strategic features are completed in the pre-built binaries folder.   You can also build your own as described below.
+
+#### Build Your Own
+
+* Install GO compiler which can be downloaded from https://golang.org/dl/ 
 
 * Download the repository  using GIT  from command line
 
@@ -177,6 +194,18 @@ git clone https://github.com/joeatbayes/file2consul.git
 * [makeGo.sh linux](makeGO.sh)  [makeGO.bat Windows](makeGO.bat)  Builds the main executables from the GO Lang source code
 * [License](LICENSE.md)
 * TODO: Fill This in
+
+## Participating
+
+[Contact me on linkedin](https://linkedin.com/in/joe-ellsworth-68222/) to obtain enhancements or updates.
+
+Please donate or send us a link to your project when you are using file2consul. We love to publish success stories.
+
+You can contribute features by making a fork and submitting a pull request.
+
+You can request new features or a Bug Fix by filing a new Issue on Bitbucket.
+
+I give first priority to features and bug fixes from people willing to pay my hourly rate for the work. 
 
 ## Reference
 

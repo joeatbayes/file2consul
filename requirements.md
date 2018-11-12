@@ -12,13 +12,11 @@ Requirements for file to consul under consideration for future work
 
 # Under Consideration 
 
-* Add verbose setting to print out all key values as they are defined to support diagnosis.  Suppress these outputs when not specified to allow faster processing. 
 * Allow check for input path to skip if already processed.
 * Modify Interpolation semantic so it could process JSON strings without conflict.  Right now the JSON value { "name" : "jim"} could be mis-interpreted. It is unlikely because it would be unlikely to get a match but it would mess up nested matches for complex JSON where we want to interpolate substrings.
-* Add a option to -saveReadable which will generate a file with all the variables and replacements expanded to allow easy testing. 
+* 
 * Allow @set semantic which updates a value in the input parameters from the input files.  this allows some customization such as group names that can be treated as local variables.   Once defined a given value can be used for interpolation.  When redefined the new value will be used without changing the those variables expanded with the old values. 
 * Allow a variable starting with value starting with @ to name a file.  If the file exists it's contents will be read and substituted for the value. The file name will be subjected to interpolation before attempting to open and the contents will also be subjected to interpolation
-* 
 * Allow a processing Directive @INCLUDE= to cause a file to be read at this time and processed as if it were include in the source file.  NOTE: Need to think about this use case we already have the ability to process files in order so should be able to do the same thing by breaking the files up.
 * Ability to suppress processing of files in directory that do not end with specific extensions such as .txt or .ini
 * Ability to process locally defined environment variables in addition to variables defined on the command line.
@@ -35,6 +33,9 @@ Requirements for file to consul under consideration for future work
 
 # Done
 
+* Add a option to -saveReadable which will generate a file with all the variables and replacements expanded to allow easy testing. 
+* Add -printlines flag  to show each line as it is read to help during diagnosis.  This works best when printlines and verbose are used together.
+* Add -verbose flag to print out all key values as they are defined to support diagnosis.  Suppress these outputs when not specified to allow faster processing. 
 * Add Leading + semantic to allow longer strings to be defined inline to build content that would be difficult to read if we forced them all to be defined on a single line.  Each content line will be concatenated to prior line after leading and trailing spaces have been trimmed delimited by \t. to allow future splitting.  This will not support JSON content because the {} interpolation semantic would confuse the parser with JSON content.
 * Modify default path delimiter from ; to :: to be compatible with Linux command line.  Also allow it to be changed by setting the PATHDELIM variable on the command line. 
 * Add option to print input lines as they are read -printLines when true print out the lines.

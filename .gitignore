@@ -6,3 +6,4 @@ data/*CACHE.b64*
 *.exe
 file2consul
 file2consul-dumb
+data/*.lastrun.txt.ini
