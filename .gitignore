@@ -3,4 +3,6 @@ data/*CACHE.b64*
 *.tmp
 *.swp
 *.log
-
+*.exe
+file2consul
+file2consul-dumb
