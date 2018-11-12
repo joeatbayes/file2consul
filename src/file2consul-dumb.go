@@ -50,7 +50,7 @@ func main() {
 	fmt.Println("inFile=", inFiName, " consul server URI=", serverURI)
 	inFile, err := os.Open(inFiName)
 	if err != nil {
-		fmt.Println("error opening ID file ", inFiName, " err=", err)
+		fmt.Println("error opening input file ", inFiName, " err=", err)
 	}
 	defer inFile.Close()
 	scanner := bufio.NewScanner(inFile)
@@ -58,11 +58,13 @@ func main() {
 	for scanner.Scan() {
 		aline := scanner.Text()
 		lineCnt++
+		aline = strings.TrimSpace(aline)
 		if len(aline) <= 0 {
 			continue
 		}
+
 		//fmt.Println(aline)
-		aline = strings.TrimSpace(aline)
+
 		if strings.HasPrefix(aline, "#") {
 			continue
 		}

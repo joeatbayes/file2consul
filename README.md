@@ -52,10 +52,13 @@ file2consul -ENV=PROD -COMPANY=ABC -APPNAME=peopleSearch -IN=data/config/simple/
 	   to data/config/simple/basic
 	  
 
-   -URI=uri to reach console server.   
+   -URI=uri to reach consul server.   
         If separated by :: (colon) will save to each 
         server listed defaults to http://127.0.0.1:8500
-        if not specified
+        if not specified.   When set to NONE will 
+        run input and compute outputs but will not 
+        update consul and will not write to
+        local cache file.
 	
    -CACHE = name of files to use as cache file.  This
       file is read and compared to the post processing 
@@ -65,7 +68,16 @@ file2consul -ENV=PROD -COMPANY=ABC -APPNAME=peopleSearch -IN=data/config/simple/
 	  delete the file before running the utility.
       This value is interpolated so you can use variables 
       things like enviornment as part of file name.
-      
+      will not be written even -URI=NONE.
+
+   -PATHDELIM =  Delimiter to use when splitting list of 
+       files, paths or URI for fields like -URI, -IN.   
+       Defaults to :: when not set.
+       
+   -PRINTLINES = Flag when this value is specified the
+     system will print every input line as it is read
+     to help in diagnostics.
+   
    -appname = variable used for interpolation
    -env =  variable used for interpolation
    -company = variable used for interpolation
@@ -107,16 +119,6 @@ file2consul-dumb -ENV=DEMO -COMPANY=ABC -APPNAME=file2consul-dumb -FILE=data/con
  -file=name of input paramter file
  
  -uri=uri to reach console server
- 
- -CACHE = name of files to use as cache file.  This 
-    file is read and compared to the post processing
-    set to determine what new or changed values need
-    to be saved to consul.  It is also re-written
-	and end of run when defined.  To clear cache
-	delete the file before running the utility.
-    This value is subjected to interpolation so 
-    you can use variables like enviornment as part 
-    of file name.
     
  -appname = variable used for interpolation
  -env =  variable used for interpolation

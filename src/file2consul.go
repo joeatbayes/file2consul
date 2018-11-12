@@ -25,20 +25,31 @@ import (
 func loadFileAsDict(inFiName string, target map[string]string, pargs *jutil.ParsedCommandArgs, doInterpolate bool) {
 	inFile, err := os.Open(inFiName)
 	if err != nil {
-		fmt.Println("error opening ID file ", inFiName, " err=", err)
+		fmt.Println("error opening input file ", inFiName, " err=", err)
 	}
 	defer inFile.Close()
 	scanner := bufio.NewScanner(inFile)
+	printLinesFlg := pargs.Exists("printlines")
 	lineCnt := 0
+	lastKey := ""
 	for scanner.Scan() {
 		aline := scanner.Text()
 		lineCnt++
+		aline = strings.TrimSpace(aline)
+		if printLinesFlg {
+			fmt.Println("#", lineCnt, "\t", aline)
+		}
 		if len(aline) <= 0 {
 			continue
 		}
-		//fmt.Println(aline)
-		aline = strings.TrimSpace(aline)
+
 		if strings.HasPrefix(aline, "#") {
+			continue
+		}
+
+		if strings.HasPrefix(aline, "+") && (len(aline) > 1) && (lastKey > "") {
+			appendVal := strings.TrimSpace(aline[1:])
+			target[lastKey] = target[lastKey] + "\t" + pargs.Interpolate(appendVal)
 			continue
 		}
 
@@ -61,6 +72,7 @@ func loadFileAsDict(inFiName string, target map[string]string, pargs *jutil.Pars
 		// TODO:  Detect @ as first character of file to load file relative to current file
 		//   for value instead of using included string.
 		target[aKey] = aVal
+		lastKey = aKey
 		fmt.Println("key=", aKey, " val=", aVal)
 	}
 }
@@ -129,7 +141,7 @@ func main() {
 
 	if len(args) < 2 { // || (pargs.Exists("h")) || (pargs.Exists("help")) {
 		msg := `EXAMPLE
-  file2consul -ENV=DEMO -COMPANY=ABC -APPNAME=file2consul-dumb -IN=data/config/simple/template;data/config/simple/prod;data/config/simple/uat;data/config/simple/joes-dev.prop.txt -uri=http://127.0.0.1:8500 -CACHE=data/{env}.CACHE.b64.txt
+  file2consul -ENV=DEMO -COMPANY=ABC -APPNAME=file2consul-dumb -IN=data/config/simple/template::data/config/simple/prod::data/config/simple/uat::data/config/simple/joes-dev.prop.txt -uri=http://127.0.0.1:8500 -CACHE=data/{env}.CACHE.b64.txt
  
   
    -IN=name of input paramter file or directory
@@ -157,6 +169,10 @@ func main() {
 	 delete the file before running the utility.  This value
 	 is subjected to interpolation so you can use things like
 	 enviornment as part of file name.
+	
+   -PATHDELIM =  Delimiter to use when splitting list of 
+     files, paths or URI for fields like -URI, -IN.   Defaults
+	 to :: when not set.
 		
    -appname = variable used for interpolation
    -env =  variable used for interpolation
@@ -169,10 +185,13 @@ func main() {
 		fmt.Println(msg)
 	}
 
-	inPaths := strings.Split(pargs.Sval("in", "data/config/simple/basic"), "::")
-	serverURIs := strings.Split(pargs.Sval("uri", "http://127.0.0.1:8500"), "::")
+	pathDelim := pargs.Sval("pathdelim", "::")
+	inPaths := strings.Split(pargs.Sval("in", "data/config/simple/basic"), pathDelim)
+	serverURIStr := pargs.Sval("uri", "http://127.0.0.1:8500") // need the basic string to support the NONE check
+	serverURIs := strings.Split(serverURIStr, pathDelim)
+	serverURIStrFlgChk := strings.ToUpper(serverURIStr)
 	cacheFiName := pargs.Interpolate(pargs.Sval("cache", ""))
-	fmt.Println("inPaths=", inPaths, " consul server URI=", serverURIs, "cacheFiName="+cacheFiName)
+	fmt.Println("pathDelim=", pathDelim, " inPaths=", inPaths, " consul server URI=", serverURIs, " cacheFiName=", cacheFiName)
 	inDict := loadInFiles(inPaths, pargs, true)
 	//fmt.Println("inDict=", inDict)
 
@@ -184,16 +203,18 @@ func main() {
 			deltaDict := jutil.CompareStrDict(cacheDict, inDict)
 			if len(deltaDict) < 1 {
 				fmt.Println("NOTE: No Values have changed, Not need to update consul")
-			} else {
+			} else if serverURIStrFlgChk != "NONE" {
 				saveValuesToConsuls(deltaDict, serverURIs)
 			}
-		} else {
+		} else if serverURIStrFlgChk != "NONE" {
 			// dictionary file did not exist yet so need to
 			// send entire set to consul.
 			saveValuesToConsuls(inDict, serverURIs)
 		}
-		jutil.SaveDictToFile(inDict, cacheFiName, true)
-	} else {
+		if serverURIStrFlgChk != "NONE" {
+			jutil.SaveDictToFile(inDict, cacheFiName, true)
+		}
+	} else if serverURIStrFlgChk != "NONE" {
 		// save entire file set to Consul since
 		// we are not using the cache.
 		saveValuesToConsuls(inDict, serverURIs)

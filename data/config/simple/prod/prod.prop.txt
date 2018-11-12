@@ -12,10 +12,24 @@
   # Demonstrate override of a previously defined value
   # with a constant that could not be deduced
   
-{ENV}.payments.vip-members=@../{ENV}.payments.vip.members.ini
+{env}.register.vip.members =  S1811717127.{env}.{company}.com
+  + S1811717128.{env}.{company}.com
+  + S1811717129.{env}.{company}.com
+  + S1811717130.{env}.{company}.com
+  # Demonstrate multi-line values that are appended together
+  # where the values are also interpolated 
+  # to allow customization.  When using this syntax the 
+  # values are concatenated with a \t before saving into
+  # consul.  Any leading or trailing spaces are also 
+  # removed to make future splitting on \t easy.
+  
+{ENV}.payments.vip.members=@../{ENV}.payments.vip.members.ini
   # Demonstrate including a file where the file name
   # is relative to the file where the include is mentioned.
   # also generating the actual file name from a variable.
   # Some values in the file are also modified using 
-  # Variable interpolation.
+  # Variable interpolation.  Normally would place this in an
+  # include file inside the directory for the environment but
+  # wanted to show that VIP members could be easily re-used across
+  # environments. 
   
