@@ -47,6 +47,7 @@ func main() {
 
 	inFiName := pargs.Sval("file", "data/simple-config/basic.prop.txt")
 	serverURI := pargs.Sval("uri", "http://127.0.0.1:8500")
+	dataCenter := pargs.Sval("dc", "")
 	fmt.Println("inFile=", inFiName, " consul server URI=", serverURI)
 	inFile, err := os.Open(inFiName)
 	if err != nil {
@@ -77,7 +78,7 @@ func main() {
 		aKey := pargs.Interpolate(arr[0])
 		aVal := pargs.Interpolate(arr[1])
 		fmt.Println("after interpolate aKey=", aKey, " aVal=", aVal)
-		jutil.SetConsulKey(serverURI, aKey, aVal)
+		jutil.SetConsulKey(serverURI, aKey, aVal, dataCenter)
 		fmt.Println("\n")
 
 	} // for
