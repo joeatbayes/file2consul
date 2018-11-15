@@ -5,5 +5,5 @@
 # require very little override that can not be done
 # automatically from variable expansion.  
 
-{ENV}.purpose=The UAT enviornment is used to support UAT users doing testing and must be kept stable
-{ENV}.number-of-search-VIP-listeners=2
+{ENV}/purpose=The UAT enviornment is used to support UAT users doing testing and must be kept stable
+{ENV}/search/member/vip/number-listeners=2

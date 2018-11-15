@@ -3,10 +3,13 @@
 # Basic System properties used by all downstream environments
 # Normally the first set of properties loaded.
 
-{ENV}.purpose= {ENV} Override this value to describe your enviornment's purpose 
+{ENV}/purpose= OVERRIDE{ENV} 
+#  Override this value to describe your environment's purpose 
 
-{ENV}.main-db-server=server1-oracle.{ENV}.{COMPANY}.com
+{ENV}/main-db-server=server1-oracle.{ENV}.{COMPANY}.com
 
-{ENV}.main-log-target=/logs/{ENV}/{APPNAME}
+{ENV}/main-log-target=/logs/{ENV}/{APPNAME}
 
-{ENV}.number-of-search-VIP-listeners=3
+{ENV}/search/member/vip/number-listeners=3
+
+{ENV}/search/member/vip/name={env}.search.{COMPANY}.com

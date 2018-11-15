@@ -6,6 +6,7 @@ import (
 	"bufio"
 	"bytes"
 	"fmt"
+	"strconv"
 
 	//"net/http"
 	"strings"
@@ -64,6 +65,43 @@ func MapBadIDChar(strIn string) string {
 		}
 	}
 	return buff.String()
+}
+
+func SaveStrsToFile(inArr []string, fiName string, b64Val bool, pargs *ParsedCommandArgs) {
+	start := Nowms()
+	verboseFlg := pargs.Exists("verbose")
+	if verboseFlg {
+		fmt.Println("SaveDictToFile ", fiName, " b64Val=", b64Val)
+	}
+	f, err := os.Create(fiName)
+	if err != nil {
+		fmt.Println("ERROR: opening file for write fiName=", fiName, " err=", err)
+		return
+	}
+
+	for ndx, val := range inArr {
+		key := strconv.FormatInt(int64(ndx), 10)
+		var saveStr string
+		if b64Val {
+			saveStr = key + "=" + val + "\n"
+		} else {
+			val = strings.Replace(val, "\n", "\t", -1) // must replace embeded CR or will mess up readability.
+			val = strings.Replace(val, "\r", " ", -1)  // in saved dictionary
+			saveStr = key + "=" + val + "\n"
+		}
+		if verboseFlg {
+			fmt.Println("saveStr=", saveStr)
+		}
+		_, err := f.WriteString(saveStr)
+		if err != nil {
+			fmt.Println("ERROR: writing to ", fiName, " err=", err)
+			defer f.Close()
+			return
+		}
+	}
+	f.Sync()
+	f.Close()
+	Elap("saveDictFile "+fiName, start, Nowms())
 }
 
 /* save dictionary to file.  Use base64 encoding for values

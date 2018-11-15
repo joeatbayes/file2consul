@@ -6,13 +6,13 @@
 # environments to be as much like prod unless there is 
 # a reason they can not be.
 
-{ENV}.purpose={ENV} Prod environment is used to support live users and should not be used for testing.
+{ENV}/purpose={ENV} Prod environment is used to support live users and should not be used for testing.
 
-{ENV}.number-of-search-VIP-listeners=19
+{ENV}/search/member/vip/number-listeners=19
   # Demonstrate override of a previously defined value
   # with a constant that could not be deduced
   
-{env}.register.vip.members =  S1811717127.{env}.{company}.com
+{env}/register/vip/members =  S1811717127.{env}.{company}.com
   + S1811717128.{env}.{company}.com
   + S1811717129.{env}.{company}.com
   + S1811717130.{env}.{company}.com
@@ -23,7 +23,7 @@
   # consul.  Any leading or trailing spaces are also 
   # removed to make future splitting on \t easy.
   
-{ENV}.payments.vip.members=@../payments.vip.members.ini
+{ENV}/search/member/vip/members=@../payments.vip.members.ini
   # Demonstrate including a file where the file name
   # is relative to the file where the include is mentioned.
   # also generating the actual file name from a variable.

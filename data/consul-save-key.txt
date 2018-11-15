@@ -1,0 +1,16 @@
+0=JTEST.main-db-server
+1=JTEST.main-log-target
+2=JTEST.number-of-search-VIP-listeners
+3=JTEST.payments.vip.members
+4=JTEST.purpose
+5=JTEST.register.vip.members
+6=JTEST/main-db-server
+7=JTEST/main-log-target
+8=JTEST/number-of-search-VIP-listeners
+9=JTEST/payments/vip/members
+10=JTEST/purpose
+11=JTEST/register/vip.members
+12=JTEST/register/vip/members
+13=JTEST/search/member/vip/members
+14=JTEST/search/member/vip/name
+15=JTEST/search/member/vip/number-listeners

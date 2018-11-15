@@ -6,6 +6,6 @@
 # if you know that you must use a entirely different
 # authorization agent then could be overridden here.
 
-{ENV}.purpose= {ENV} The Dev Test Environment is shared by all developers who want to test their code against current builds from other developers. 
-{ENV}.number-of-search-VIP-listeners=1
-{ENV}.main-log-target=./logs/{APPNAME}
+{ENV}/purpose= The Dev Test Environment is shared by all developers who want to test their code against current builds from other developers. 
+{ENV}/search/member/vip/number-listeners=1
+{ENV}/main-log-target=./logs/{APPNAME}

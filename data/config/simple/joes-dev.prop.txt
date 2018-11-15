@@ -1,15 +1,16 @@
-# For joes special development enviornment we are 
+# For joes special development environment we are 
 # running tests against the PROD server so we will
 # change the default override the default target DB.
 # Normally inherits from DEV or TEST with changes to 
 # allow avoid impacting those users.
 
-{ENV}.purpose= {ENV} Joes dev enviornment is used to support testers working on exploratory functionality and may be broke at any time. 
-{ENV}.main-db-server=server1-oracle.PROD.ABCX1.com
+{ENV}/purpose= {ENV} Joes dev environment is used to support testers working on exploratory functionality and may be broke at any time. 
+
+{ENV}/main-db-server=server1-oracle.PROD.ABCX1.com
 # Example of an Override. Note the change to PROD.ABCX1.com was needed 
 # because it could not
-# deduced from the enviornment name.  I is generally bad style to have
+# deduced from the environment name.  I is generally bad style to have
 # a not prod service reference a prod DB but there are times where it 
 # is necessary
 
-{ENV}.number-of-search-VIP-listeners=91
+{ENV}/search/member/vip/number-listeners=91

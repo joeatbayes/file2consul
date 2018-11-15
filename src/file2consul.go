@@ -161,12 +161,13 @@ func logChangedItems(sdict map[string]string, fiName string, pargs *jutil.Parsed
 
 func saveValuesToConsul(sdict map[string]string, serverURI string, pargs *jutil.ParsedCommandArgs) {
 	verboseFlg := pargs.Exists("verbose")
+	dc := pargs.Sval("dc", "")
 	start := jutil.Nowms()
 	if verboseFlg {
 		fmt.Println("saveValuesToConsul ", serverURI, " numItems=", len(sdict))
 	}
 	for akey, aval := range sdict {
-		jutil.SetConsulKey(serverURI, akey, aval)
+		jutil.SetConsulKey(serverURI, akey, aval, dc)
 	}
 
 	jutil.Elap("Save Values to Consul "+serverURI, start, jutil.Nowms())
@@ -226,6 +227,9 @@ func main() {
    -VERBOSE When this value is specified the system 
      will print additional details about values as 
      they are set or re-set during the run. 
+	
+   -DC  when set this value is passed to the data 
+     center attribute in the PUT call to consul. 
 		
    -appname = variable used for interpolation
    -env =  variable used for interpolation
@@ -294,4 +298,6 @@ func main() {
 	}
 	jutil.Elap("file2Consul complete run", start, jutil.Nowms())
 
+	keys := jutil.GetConsulKeys(serverURIs[0], "", "+", "")
+	fmt.Println(" keys=", keys)
 } //main
