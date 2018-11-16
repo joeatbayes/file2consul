@@ -1,7 +1,10 @@
 package jutil
 
 import (
+	"encoding/base64"
 	"encoding/json"
+
+	//"errors"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -13,6 +16,15 @@ import (
 
 type ConsulKeys struct {
 	Keys []string
+}
+
+type ConsulKV struct {
+	LockIndex   int
+	Key         string
+	Flags       int
+	Value       string
+	CreateIndex int
+	ModifyIndex int
 }
 
 func GetConsulKeys(serverURI string, key string, sep string, dataCenter string) []string {
@@ -54,6 +66,92 @@ func GetConsulKeys(serverURI string, key string, sep string, dataCenter string) 
 	//fmt.Println(" body=", string(body))
 	return m.Keys
 
+}
+
+// Save specified key to consul.  report error if fails.
+func GetConsulVal(serverURI string, key string, dataCenter string) (string, error) {
+	//fmt.Println("GetConsulKey key=", key, " dataCenter=", dataCenter)
+	uri := serverURI + "/v1/kv/" + key
+	if dataCenter > "" {
+		uri = uri + "?dc=" + url.QueryEscape(dataCenter)
+	}
+	//fmt.Println("uri=", uri)
+	start := time.Now().UTC()
+	hc := http.Client{}
+	req, err := http.NewRequest("GET", uri, nil)
+	if err != nil {
+		msg := fmt.Errorf("Error: GetConsulVal: opening uri= %s err=%s  key=%s", uri, err, key)
+		fmt.Println(msg)
+		return "", msg
+	}
+	resp, err := hc.Do(req)
+	if err != nil {
+		msg := fmt.Errorf("Error: GetConsulVal: uri=%s err=%s", uri, err)
+		fmt.Println(msg)
+		return "", msg
+	}
+
+	if resp.StatusCode != 200 {
+		fmt.Println("Error: GetConsulVal: Expected Status Code 200, Got ", resp.StatusCode)
+	} else {
+		//fmt.Println("Sucess:")
+	}
+
+	var m ConsulKV
+
+	body, _ := ioutil.ReadAll(resp.Body)
+	bodys := strings.TrimSpace(string(body))
+	bodys = strings.TrimSuffix(bodys, "]")
+	bodys = strings.TrimPrefix(bodys, "[")
+	//fmt.Println("body", bodys)
+	err = json.Unmarshal([]byte(bodys), &m)
+	if err != nil {
+		msg := fmt.Errorf("Error: getConsulVal key=%s err=%s", key, err)
+		return "", msg
+	}
+
+	TimeTrack(os.Stdout, start, "finished single PUT uri="+uri+"\n")
+	//fmt.Println("statusCode=", resp.StatusCode)
+	//fmt.Println(" body=", string(body))
+	uDec, _ := base64.StdEncoding.DecodeString(m.Value)
+
+	return string(uDec), nil
+}
+
+// Save specified key to consul.  report error if fails.
+func DeleteConsulKey(serverURI string, key string, dataCenter string) (string, error) {
+	fmt.Println("setConsulKey key=", key, " dataCenter=", dataCenter)
+	uri := serverURI + "/v1/kv/" + key
+	if dataCenter > "" {
+		uri = uri + "?dc=" + url.QueryEscape(dataCenter)
+	}
+	//fmt.Println("uri=", uri)
+	start := time.Now().UTC()
+	hc := http.Client{}
+	req, err := http.NewRequest("DELETE", uri, nil)
+	if err != nil {
+		msg := fmt.Errorf("Error: DeleteConsulKey: opening uri= %s err=%s  key=%s", uri, err, key)
+		fmt.Println(msg)
+		return "", msg
+	}
+	resp, err := hc.Do(req)
+	if err != nil {
+		msg := fmt.Errorf("Error: uri=%s err=%s", uri, err)
+		fmt.Println(msg)
+		return "", msg
+	}
+
+	if resp.StatusCode != 200 {
+
+		fmt.Println("Error: DeleteConsulKey:  Expected Status Code 200, Got ", resp.StatusCode)
+	} else {
+		//fmt.Println("Sucess:")
+	}
+	body, _ := ioutil.ReadAll(resp.Body)
+	TimeTrack(os.Stdout, start, "finished single PUT uri="+uri+"\n")
+	fmt.Println("statusCode=", resp.StatusCode)
+	fmt.Println(" body=", string(body))
+	return string(body), nil
 }
 
 // Save specified key to consul.  report error if fails.

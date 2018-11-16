@@ -230,6 +230,7 @@ func main() {
 	
    -DC  when set this value is passed to the data 
      center attribute in the PUT call to consul. 
+	
 		
    -appname = variable used for interpolation
    -env =  variable used for interpolation
@@ -298,6 +299,6 @@ func main() {
 	}
 	jutil.Elap("file2Consul complete run", start, jutil.Nowms())
 
-	keys := jutil.GetConsulKeys(serverURIs[0], "", "+", "")
-	fmt.Println(" keys=", keys)
+	//keys := jutil.GetConsulKeys(serverURIs[0], "", "+", "")
+	//fmt.Println(" keys=", keys)
 } //main

@@ -13,8 +13,9 @@ import (
 	//"io"
 	//"io/ioutil"
 	//"log"
-	//"net/url"
+	"net/url"
 	"os"
+
 	//"os/exec"
 	"encoding/base64"
 )
@@ -107,14 +108,18 @@ func SaveStrsToFile(inArr []string, fiName string, b64Val bool, pargs *ParsedCom
 /* save dictionary to file.  Use base64 encoding for values
 because some values may contain vertical whitespace When b64Val
 is true then encode the values otherwise write them native.*/
-func SaveDictToFile(sdict map[string]string, fiName string, b64Val bool, pargs *ParsedCommandArgs) {
+func SaveDictToFile(sdict map[string]string, fiName string, b64Flg bool, pargs *ParsedCommandArgs) {
 	// TODO: May be faster to endode this in a in memory
 	// butter and write as a block.
+	//b64Flg := pargs.Exists("b64")
+	URLEncode := pargs.Exists("urlencode")
+
 	start := Nowms()
 	verboseFlg := pargs.Exists("verbose")
 	if verboseFlg {
-		fmt.Println("SaveDictToFile ", fiName, " b64Val=", b64Val)
+		fmt.Println("SaveDictToFile ", fiName, " b64Flg=", b64Flg)
 	}
+	//fmt.Println("SaveDictToFile ", fiName, " b64Flg=", b64Flg, " urlencode=", URLEncode)
 	f, err := os.Create(fiName)
 	if err != nil {
 		fmt.Println("ERROR: opening dict file for write fiName=", fiName, " err=", err)
@@ -123,12 +128,15 @@ func SaveDictToFile(sdict map[string]string, fiName string, b64Val bool, pargs *
 
 	for key, val := range sdict {
 		var saveStr string
-		if b64Val {
-			saveStr = key + "=" + base64.StdEncoding.EncodeToString([]byte(val)) + "\n"
+
+		if URLEncode {
+			saveStr = key + "=" + url.QueryEscape(val)
+		} else if b64Flg {
+			saveStr = key + "=" + base64.StdEncoding.EncodeToString([]byte(val))
 		} else {
 			val = strings.Replace(val, "\n", "\t", -1) // must replace embeded CR or will mess up readability.
 			val = strings.Replace(val, "\r", " ", -1)  // in saved dictionary
-			saveStr = key + "=" + val + "\n"
+			saveStr = key + "=" + val
 		}
 		if verboseFlg {
 			fmt.Println("saveStr=", saveStr)
@@ -139,6 +147,7 @@ func SaveDictToFile(sdict map[string]string, fiName string, b64Val bool, pargs *
 			defer f.Close()
 			return
 		}
+		_, err = f.WriteString("\n")
 	}
 	f.Sync()
 	f.Close()

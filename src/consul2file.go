@@ -18,6 +18,7 @@ import (
 	"os"
 	//"strings"
 	//"time"
+	//"net/url"
 	//"path/filepath"
 )
 
@@ -28,7 +29,8 @@ func main() {
 
 	if len(args) < 2 { // || (pargs.Exists("h")) || (pargs.Exists("help")) {
 		msg := `EXAMPLE
-  consulSaveKeys  -OUT=data/consul-save-key.txt -uri=http://127.0.0.1:8500 -prefix=/
+  consul2file -OUT=data/consul-save-key.txt -uri=http://127.0.0.1:8500 -prefix=/
+    Saves consul server contents to a local file.
    
    -OUT=name of file to write contents into. 
 
@@ -43,12 +45,18 @@ func main() {
      folder style functionality.  Defaults to / when 
 	 not set. 
 	
-   -TODO: GETVALUES = when specified system will fetch values
+   KEYSONLY = when specified system will fetch values
       from consul and include them in the saved file.
-	
-   -TODO: B64VAL = When specified any values written will be base64 encoded.
 
-   -TODO: URLEncode = When specified any values will be URL escaped 
+   URLEncode = When specified any values will be URL escaped 
+	
+   B64 = When specified any values written will be base64 encoded.
+    unless URLEncode flag is set. 
+	
+   -TODO: MAKETREE = When specified will use the out name as a 
+     directory and will create a directory tree reflecting the 
+	 containment folders. Uses / as the default delimiter.
+
 	       
 		 -`
 		fmt.Println(msg)
@@ -59,6 +67,9 @@ func main() {
 	out := pargs.Sval("out", "data/save-keys.txt")
 	serverURI := pargs.Sval("uri", "http://127.0.0.1:8500") // need the basic string to support the NONE check
 	verboseFlg := pargs.Exists("verbose")
+	b64Flg := pargs.Exists("b64")
+	//URLEncode := pargs.Exists("urlencode")
+
 	if verboseFlg {
 		fmt.Println("out=", out, " consul server URI=", serverURI, " prefix=", prefix, " delim=", delim)
 	}
@@ -68,8 +79,28 @@ func main() {
 
 	keys := jutil.GetConsulKeys(serverURI, "", "+", "")
 	fmt.Println(" keys=", keys)
-	jutil.SaveStrsToFile(keys, out, false, pargs)
+	if pargs.Exists("keysonly") {
+		jutil.SaveStrsToFile(keys, out, false, pargs)
+	} else {
+
+		tout := make(map[string]string)
+		for ndx, key := range keys {
+			val, err := jutil.GetConsulVal(serverURI, key, "")
+			if err != nil {
+				fmt.Printf("ndx=%d err=%s key=%s val=%s\n", err, ndx, key, val)
+			}
+
+			fmt.Printf("ndx=%d key=%s val=%s\n", ndx, key, val)
+			// Parse value input with JSON
+			tout[key] = val
+			//if b64Val {
+			//saveStr = key + "=" + base64.StdEncoding.EncodeToString([]byte(val)) + "\n"
+			//}
+		}
+
+		jutil.SaveDictToFile(tout, out, b64Flg, pargs)
+	}
 	// TODO:  Fetch the value for each Key from consul
 	//  and write the actual values to the save file.
-	jutil.Elap("consulSaveKeys complete run", start, jutil.Nowms())
+	jutil.Elap("consul2file complete run", start, jutil.Nowms())
 } //main
