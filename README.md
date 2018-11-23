@@ -2,6 +2,8 @@
 
 Mirror key, values from property files into consul.       Reduce cost of maintaining larger configuration sets for multiple environments by reducing re-statement and manual editing.  It provides  variable expansion, interpolation, inheritance style overrides and the ability to update multiple consul servers.
 
+> See Also: [Devops with lxd for micro services](https://bitbucket.org/joexdobs/devops_lxd_containers/src/master/documentation/devops-with-lxd.md?fileviewer=file-view-default)  file2consul is a component designed to enable my DevOps vision in.  [Guiding principals for devops](https://bitbucket.org/joexdobs/devops_lxd_containers/src/master/documentation/guiding-principals.md?fileviewer=file-view-default) 
+
 #### Environments are actually quite similar
 When building complex software that run on more than one computer we call an environment the set of computers required to run 1 full copy. 
 
