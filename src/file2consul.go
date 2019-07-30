@@ -259,8 +259,8 @@ func main() {
 		fmt.Println("inDict=", inDict)
 	}
 
-	if serverURIStrFlgChk != "NONE" {
-		fmt.Println("NOTE: Skip save to Consule and update of Cache file because -uri == NONE")
+	if serverURIStrFlgChk == "NONE" {
+		fmt.Println("NOTE: Skip save to Consul and update of Cache file because -uri == NONE")
 	}
 
 	if cacheFiName > "" {
