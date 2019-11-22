@@ -263,7 +263,7 @@ func (parg *ParsedCommandArgs) Interpolate(str string) string {
 		// or add it back in with the {} protecting it
 		// TODO: Add lookup from enviornment variable
 		//  if do not find it in the command line parms
-		lookVal := parg.Sval(strings.ToLower(aMatchStr), "{"+aMatchStr+"}")
+		lookVal := parg.Sval(strings.ToLower(aMatchStr), "{"+str[start:end]+"}")
 		//fmt.Printf("matchStr=%s  lookVal=%s\n", aMatchStr, lookVal)
 		sb = append(sb, lookVal)
 		last = end + 1
