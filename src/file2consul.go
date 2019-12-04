@@ -116,6 +116,17 @@ func loadFileAsDict(inFiName string, target map[string]string, pargs *jutil.Pars
 	}
 }
 
+func selfInterpolate(dict map[string]string) {
+    pargs := jutil.CreateArgsFromMap(dict)
+    for key, value := range dict {
+        newKey := pargs.Interpolate(key)
+        dict[newKey] = pargs.Interpolate(value)
+        if (key != newKey) {
+            delete(dict, key)
+        }
+    }
+}
+
 func loadInFiles(inPaths []string, pargs *jutil.ParsedCommandArgs, doInterpolate bool) map[string]string {
 	verboseFlg := pargs.Exists("verbose")
 	start := jutil.Nowms()
@@ -190,7 +201,7 @@ func main() {
   file2consul -ENV=DEMO -COMPANY=ABC -APPNAME=file2consul-dumb -IN=data/config/simple/template::data/config/simple/prod::data/config/simple/uat::data/config/simple/joes-dev.prop.txt -uri=http://127.0.0.1:8500 -CACHE=data/{env}.CACHE.b64.txt
  
   
-   -IN=name of input paramter file or directory
+   -IN=name of input parameter file or directory
        If named resource is directory will process all 
 	   files in that directory.    Multiple inputs
 	   can be specified seprated by ;.  Each input set
@@ -226,7 +237,18 @@ func main() {
      
    -VERBOSE When this value is specified the system 
      will print additional details about values as 
-     they are set or re-set during the run. 
+     they are set or re-set during the run.
+
+   -SELFINTERPOLATE Also use loaded properties for interpolation.
+     This is performed after inheritance allowing the creation of
+     placeholders in one input replaced from another input file.
+     Command line values take precedence.
+
+     logdir=/var/logs/{env}      in file 1
+     env=test                    in file 2
+     logpath={logdir}/{appname}  in file 3
+     appname=myapp               in file 4 or command line
+        --> logpath=/var/logs/test/myapp
 	
    -DC  when set this value is passed to the data 
      center attribute in the PUT call to consul. 
@@ -255,6 +277,9 @@ func main() {
 		fmt.Println("pathDelim=", pathDelim, " inPaths=", inPaths, " consul server URI=", serverURIs, " cacheFiName=", cacheFiName)
 	}
 	inDict := loadInFiles(inPaths, pargs, true)
+	if (pargs.Exists("selfinterpolate")) {
+	    selfInterpolate(inDict)
+	}
 	if verboseFlg {
 		fmt.Println("inDict=", inDict)
 	}

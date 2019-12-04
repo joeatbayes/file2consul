@@ -20,6 +20,7 @@ type ParsedCommandArgs struct {
 	PositArgs []string
 	NamedStr  map[string]string
 	NamedInt  map[string]int
+	Recurse   bool
 }
 
 // Parse command line parameters
@@ -73,6 +74,7 @@ func ParseCommandLine(args []string) *ParsedCommandArgs {
 	tout.PositArgs = make([]string, 1)
 	tout.NamedStr = make(map[string]string)
 	tout.NamedInt = make(map[string]int)
+	tout.Recurse = false
 	tout.ExeName = args[0]
 	tout.PositArgs[0] = tout.ExeName
 	numArgs := len(args)
@@ -111,6 +113,18 @@ func ParseCommandLine(args []string) *ParsedCommandArgs {
 	} // for
 	return tout
 }
+
+func CreateArgsFromMap(args map[string]string) *ParsedCommandArgs {
+	tout := new(ParsedCommandArgs)
+	tout.PositArgs = make([]string, 1)
+	tout.NamedInt = make(map[string]int)
+    tout.NamedStr = args
+	tout.Recurse = true
+	tout.ExeName = "CreateArgsFromMap"
+	tout.PositArgs[0] = tout.ExeName
+	return tout
+}
+
 
 func (parg *ParsedCommandArgs) String() string {
 	var sbb bytes.Buffer
@@ -263,7 +277,17 @@ func (parg *ParsedCommandArgs) Interpolate(str string) string {
 		// or add it back in with the {} protecting it
 		// TODO: Add lookup from enviornment variable
 		//  if do not find it in the command line parms
-		lookVal := parg.Sval(strings.ToLower(aMatchStr), "{"+str[start:end]+"}")
+        val, found := parg.NamedStr[aMatchStr]
+        var lookVal string
+		if (found) {
+		    if (parg.Recurse) {
+		        lookVal = parg.Interpolate(val)
+		    } else {
+		        lookVal = val
+		    }
+		} else {
+		    lookVal = "{"+str[start:end]+"}"
+		}
 		//fmt.Printf("matchStr=%s  lookVal=%s\n", aMatchStr, lookVal)
 		sb = append(sb, lookVal)
 		last = end + 1
