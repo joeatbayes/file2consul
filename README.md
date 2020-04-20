@@ -191,6 +191,9 @@ Starting a line with + indicates you want to add the value on that line into the
   # the + concatenation semantic above.
 ```
 
+## Supplying the ACL Token
+
+Will accept token via environment variable `CONSUL_HTTP_TOKEN`
 
 ## Build & Setup
 
