@@ -40,6 +40,7 @@ func GetConsulKeys(serverURI string, key string, sep string, dataCenter string) 
 		fmt.Println("Error: GetConsulKeys:opening uri=", uri, " err=", err, " key=", key)
 		return nil
 	}
+	req.Header.Set("X-Consul-Token", os.Getenv("CONSUL_HTTP_TOKEN"))
 	resp, err := hc.Do(req)
 	if err != nil {
 		fmt.Println("Error: uri=", uri, " err=", err)
@@ -84,6 +85,7 @@ func GetConsulVal(serverURI string, key string, dataCenter string) (string, erro
 		fmt.Println(msg)
 		return "", msg
 	}
+	req.Header.Set("X-Consul-Token", os.Getenv("CONSUL_HTTP_TOKEN"))
 	resp, err := hc.Do(req)
 	if err != nil {
 		msg := fmt.Errorf("Error: GetConsulVal: uri=%s err=%s", uri, err)
@@ -134,6 +136,7 @@ func DeleteConsulKey(serverURI string, key string, dataCenter string) (string, e
 		fmt.Println(msg)
 		return "", msg
 	}
+	req.Header.Set("X-Consul-Token", os.Getenv("CONSUL_HTTP_TOKEN"))
 	resp, err := hc.Do(req)
 	if err != nil {
 		msg := fmt.Errorf("Error: uri=%s err=%s", uri, err)
@@ -169,6 +172,7 @@ func SetConsulKey(serverURI string, key string, val string, dataCenter string) {
 		fmt.Println("Error: opening uri=", uri, " err=", err, " key=", key, "  val=", val)
 		return
 	}
+	req.Header.Set("X-Consul-Token", os.Getenv("CONSUL_HTTP_TOKEN"))
 	resp, err := hc.Do(req)
 	if err != nil {
 		fmt.Println("Error: uri=", uri, " err=", err)
